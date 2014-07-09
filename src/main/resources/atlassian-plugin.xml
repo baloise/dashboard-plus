@@ -1,0 +1,58 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}"
+	name="${project.name}" plugins-version="2">
+	<plugin-info>
+		<description>${project.description}</description>
+		<version>${project.version}</version>
+		<vendor name="${project.organization.name}" url="${project.organization.url}" />
+		<param name="plugin-icon">images/pluginIcon.png</param>
+		<param name="plugin-logo">images/pluginLogo.png</param>
+		<!-- <bundle-instructions>
+      		<Import-Package>org.sonar.wsclient,*;resolution:=optional</Import-Package>
+    	</bundle-instructions> -->
+	</plugin-info>
+
+	<!-- add our macro -->
+	<xhtml-macro name="sonar-status" class="com.baloise.confluence.SonarStatusMacro"
+		key="sonar-status"
+		icon="/download/resources/${project.groupId}.${project.artifactId}/images/sonarStatusIcon.png">
+		<category name="visuals" />
+		<parameters>
+			<parameter name="host" type="string" required="true" default="http://itq.bvch.ch/sonar"/>
+			<parameter name="resourceId" type="string" required="true" default="ch.baloise.testing.st:gwpc-st-TEST">
+				<option key="showNameInPlaceholder" value="false" />
+            	<option key="showValueInPlaceholder" value="true" />
+            </parameter>
+			<parameter name="label" type="string"/>
+			<parameter name="threshold1" type="string" required="true" default="1.0"/>
+			<parameter name="threshold2" type="string" required="true" default="0.75"/>
+			<parameter name="period" type="string" default="0"/>
+			<parameter name="showDetails" type="boolean" default="true"/>
+		</parameters>
+	</xhtml-macro>
+
+	<!-- add our i18n resource -->
+	<resource type="i18n" name="i18n" location="dashboard-plus" />
+	<resource type="download" name="images/" location="/images" />
+
+	<!-- add our web resources -->
+	<web-resource key="dashboard-plus-resources" name="dashboard-plus Web Resources">
+		<dependency>com.atlassian.auiplugin:ajs</dependency>
+
+		<resource type="download" name="dashboard-plus.css" location="/css/dashboard-plus.css" />
+		<resource type="download" name="dashboard-plus.js" location="/js/dashboard-plus.js" />
+		<resource type="download" name="images/" location="/images" />
+
+		<context>dashboard-plus</context>
+	</web-resource>
+
+	<!-- publish our component -->
+	<!-- <component key="myPluginComponent" class="com.baloise.confluence.MyPluginComponentImpl" 
+		public="true"> <interface>com.baloise.confluence.MyPluginComponent</interface> 
+		</component> -->
+
+	<!-- import from the product container -->
+	<component-import key="applicationProperties"
+		interface="com.atlassian.sal.api.ApplicationProperties" />
+	<component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
+
+</atlassian-plugin>
