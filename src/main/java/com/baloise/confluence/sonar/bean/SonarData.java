@@ -1,9 +1,11 @@
-package com.baloise.confluence.sonar;
+package com.baloise.confluence.sonar.bean;
 
 import java.util.Date;
 
 import org.sonar.wsclient.services.Measure;
 import org.sonar.wsclient.services.Resource;
+
+import com.baloise.confluence.sonar.SonarService;
 
 public class SonarData {
 

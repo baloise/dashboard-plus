@@ -21,10 +21,10 @@ import com.atlassian.confluence.util.GeneralUtil;
 import com.atlassian.confluence.util.i18n.Message;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
-import com.baloise.confluence.sonar.SonarData;
 import com.baloise.confluence.sonar.SonarService;
-import com.baloise.confluence.sonar.SonarServiceException;
-import com.baloise.confluence.sonar.StatusColor;
+import com.baloise.confluence.sonar.bean.SonarData;
+import com.baloise.confluence.sonar.exception.SonarInstanceUnavailableException;
+import com.baloise.confluence.sonar.exception.SonarResourceNotFoundException;
 
 public class SonarStatusMacro implements Macro {
 
@@ -120,7 +120,9 @@ public class SonarStatusMacro implements Macro {
 					determineStatusColor(params, sonarData));
 			context.put(VELO_PARAM_NAME_SONARLINK, params.host
 					+ "/plugins/resource/" + sonarData.getResource().getId()
-					+ "?page=org.sonar.plugins.timeline.GwtTimeline");
+					// + "?page=org.sonar.plugins.timeline.GwtTimeline");
+					+ "?metric="
+					+ SonarService.SONAR_METRIC_KEY_TEST_SUCCESS_DENSITY);
 
 			context.put(VELO_PARAM_NAME_SHOWDETAILS, params.showDetails);
 			Message lastRunDateFriendlyFormatted = newFriendlyDateFormatter()
@@ -141,12 +143,17 @@ public class SonarStatusMacro implements Macro {
 			context.put(VELO_PARAM_NAME_TESTCOUNT, sonarData.getTestCount());
 			context.put(VELO_PARAM_NAME_TESTSUCCESSDENSITY, sonarData
 					.getTestSuccessDensity().getFormattedValue());
-		} catch (SonarServiceException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "?");
+		} catch (SonarResourceNotFoundException e) {
+			context.put(VELO_PARAM_NAME_LABEL, "Sonar resource not found !");
 			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
 			context.put(VELO_PARAM_NAME_SONARLINK, params.host
 					+ "/dashboard/index/" + params.resourceId);
-			context.put(VELO_PARAM_NAME_SHOWDETAILS, Boolean.toString(false));
+			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+		} catch (SonarInstanceUnavailableException e) {
+			context.put(VELO_PARAM_NAME_LABEL, "Sonar unavailable !");
+			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
+			context.put(VELO_PARAM_NAME_SONARLINK, params.host);
+			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
 		}
 
 		String result = renderer.render(
@@ -229,6 +236,10 @@ public class SonarStatusMacro implements Macro {
 		String host, resourceId, label;
 		double threshold1, threshold2, period;
 		boolean showDetails;
+	}
+
+	private static enum StatusColor {
+		Grey, Red, Yellow, Green
 	}
 
 }
