@@ -21,23 +21,37 @@ public class SonarData {
 	}
 
 	public long getLastRunDuration() {
-		return resource
-				.getMeasure(SonarService.SONAR_METRIC_KEY_TEST_EXECUTION_TIME)
-				.getValue().longValue();
+		Measure measure = resource
+				.getMeasure(SonarService.SONAR_METRIC_KEY_TEST_EXECUTION_TIME);
+		if (measure == null) {
+			return 0l;
+		} else {
+			return measure.getValue().longValue();
+		}
 	}
 
 	public int getTestCount() {
-		return resource.getMeasureIntValue(SonarService.SONAR_METRIC_KEY_TESTS)
-				.intValue();
+		Integer measure = resource
+				.getMeasureIntValue(SonarService.SONAR_METRIC_KEY_TESTS);
+		if (measure == null) {
+			return 0;
+		} else {
+			return measure.intValue();
+		}
+	}
+
+	public int getTestFailureCount() {
+		Integer measure = resource
+				.getMeasureIntValue(SonarService.SONAR_METRIC_KEY_TEST_FAILURES);
+		if (measure == null) {
+			return 0;
+		} else {
+			return measure.intValue();
+		}
 	}
 
 	public int getTestSuccessCount() {
-		return resource.getMeasureIntValue(SonarService.SONAR_METRIC_KEY_TESTS)
-				.intValue()
-				- resource.getMeasureIntValue(
-						SonarService.SONAR_METRIC_KEY_TEST_FAILURES).intValue()
-				- resource.getMeasureIntValue(
-						SonarService.SONAR_METRIC_KEY_TEST_ERRORS).intValue();
+		return getTestCount() - getTestFailureCount();
 	}
 
 	public Measure getTestSuccessDensity() {

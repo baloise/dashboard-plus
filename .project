@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
   <name>dashboard-plus</name>
-  <comment>This is the com.baloise.confluence:dashboard-plus plugin for Atlassian Confluence. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
+  <comment>The Dashboard+ plugin for Confluence provides macros to visualize various status information (e.g. from Sonar, Jenkins). NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
   <projects/>
   <buildSpec>
     <buildCommand>

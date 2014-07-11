@@ -1,7 +1,9 @@
 package com.baloise.confluence;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
@@ -11,7 +13,6 @@ import com.atlassian.confluence.core.FormatSettingsManager;
 import com.atlassian.confluence.core.TimeZone;
 import com.atlassian.confluence.core.datetime.FriendlyDateFormatter;
 import com.atlassian.confluence.languages.LocaleManager;
-import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
@@ -21,38 +22,22 @@ import com.atlassian.confluence.util.GeneralUtil;
 import com.atlassian.confluence.util.i18n.Message;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
-import com.baloise.confluence.sonar.SonarService;
-import com.baloise.confluence.sonar.bean.SonarData;
-import com.baloise.confluence.sonar.exception.SonarInstanceUnavailableException;
-import com.baloise.confluence.sonar.exception.SonarResourceNotFoundException;
+import com.baloise.confluence.exception.ResourceNotFoundException;
+import com.baloise.confluence.exception.ServiceUnavailableException;
+import com.baloise.confluence.jenkins.JenkinsService;
+import com.baloise.confluence.jenkins.bean.JenkinsData;
 
-public class SonarStatusMacro implements Macro {
-
-	private static final String VELO_PARAM_NAME_TESTSUCCESSDENSITY = "testSuccessDensity";
-	private static final String VELO_PARAM_NAME_TESTCOUNT = "testCount";
-	private static final String VELO_PARAM_NAME_TESTSUCCESSCOUNT = "testSuccessCount";
-	private static final String VELO_PARAM_NAME_LASTRUNDURATION = "lastRunDuration";
-	private static final String VELO_PARAM_NAME_LASTRUNWHEN = "lastRunWhen";
-	private static final String VELO_PARAM_NAME_SHOWDETAILS = "showDetails";
-	private static final String VELO_PARAM_NAME_SONARLINK = "sonarLink";
-	private static final String VELO_PARAM_NAME_COLOR = "color";
-	private static final String VELO_PARAM_NAME_LABEL = "label";
+public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 
 	private static final String MACRO_PARAM_NAME_HOST = "host";
-	private static final String MACRO_PARAM_NAME_RESOURCEID = "resourceId";
+	private static final String MACRO_PARAM_NAME_JOBNAME = "jobName";
 	private static final String MACRO_PARAM_NAME_LABEL = "label";
-	private static final String MACRO_PARAM_NAME_THRESHOLD1 = "threshold1";
-	private static final String MACRO_PARAM_NAME_THRESHOLD2 = "threshold2";
 	private static final String MACRO_PARAM_NAME_PERIOD = "period";
 	private static final String MACRO_PARAM_NAME_SHOWDETAILS = "showDetails";
 
-	private static final String VELOCITY_TEMPLATE = "com/baloise/confluence/sonar-status.vm";
-
-	private static final String MACRO_PARAM_DEFAULT_HOST = "http://itq.bvch.ch/sonar";
-	private static final String MACRO_PARAM_DEFAULT_RESOURCEID = "ch.baloise.testing.st:gwpc-st-TEST";
+	private static final String MACRO_PARAM_DEFAULT_HOST = "http://svx-build04.bvch.ch:8080";
+	private static final String MACRO_PARAM_DEFAULT_JOBNAME = "PolicyCenter_CI";
 	private static final String MACRO_PARAM_DEFAULT_LABEL = null;
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = "1.0";
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = "0.75";
 	private static final String MACRO_PARAM_DEFAULT_PERIOD = "0";
 	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = "true";
 
@@ -65,7 +50,7 @@ public class SonarStatusMacro implements Macro {
 	private final LocaleManager localeManager;
 	private final I18nResolver i18n;
 
-	public SonarStatusMacro(/* XhtmlContent xhtmlUtils, */
+	public JenkinsJobStatusMacro(/* XhtmlContent xhtmlUtils, */
 	/* ApplicationLinkService applicationLinkService, */Renderer renderer,
 			UserAccessor userAccessor,
 			FormatSettingsManager formatSettingsManager,
@@ -86,19 +71,11 @@ public class SonarStatusMacro implements Macro {
 		Params params = new Params();
 		params.host = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_HOST, MACRO_PARAM_DEFAULT_HOST);
-		params.resourceId = loadDefaultedParamValue(parameters,
-				MACRO_PARAM_NAME_RESOURCEID, MACRO_PARAM_DEFAULT_RESOURCEID);
+		params.jobName = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_JOBNAME, MACRO_PARAM_DEFAULT_JOBNAME);
 
 		params.label = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_LABEL, MACRO_PARAM_DEFAULT_LABEL);
-		params.threshold1 = parseDoubleParam(
-				loadDefaultedParamValue(parameters,
-						MACRO_PARAM_NAME_THRESHOLD1,
-						MACRO_PARAM_DEFAULT_THRESHOLD1), 0d, 1d);
-		params.threshold2 = parseDoubleParam(
-				loadDefaultedParamValue(parameters,
-						MACRO_PARAM_NAME_THRESHOLD2,
-						MACRO_PARAM_DEFAULT_THRESHOLD2), 0d, params.threshold1);
 		params.period = parseDoubleParam(
 				loadDefaultedParamValue(parameters, MACRO_PARAM_NAME_PERIOD,
 						MACRO_PARAM_DEFAULT_PERIOD), -Double.MAX_VALUE,
@@ -110,56 +87,88 @@ public class SonarStatusMacro implements Macro {
 
 		Map<String, Object> context = MacroUtils.defaultVelocityContext();
 		try {
-			SonarData sonarData = SonarService.createServiceAndFetchData(
-					params.host, params.resourceId);
+			JenkinsData jenkinsData = JenkinsService.createServiceAndFetchData(
+					params.host, params.jobName);
 
-			context.put(VELO_PARAM_NAME_LABEL,
-					params.label != null ? params.label : sonarData
-							.getResource().getName());
-			context.put(VELO_PARAM_NAME_COLOR,
-					determineStatusColor(params, sonarData));
-			context.put(VELO_PARAM_NAME_SONARLINK, params.host
-					+ "/plugins/resource/" + sonarData.getResource().getId()
-					// + "?page=org.sonar.plugins.timeline.GwtTimeline");
-					+ "?metric="
-					+ SonarService.SONAR_METRIC_KEY_TEST_SUCCESS_DENSITY);
+			if (jenkinsData.getLastCompletedBuildDetails() == null) {
+				context.put(VELO_PARAM_NAME_LABEL, "?");
+				context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
+				context.put(VELO_PARAM_NAME_HYPERLINK, params.host + "/job/"
+						+ params.jobName);
+				context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+			} else {
+				context.put(VELO_PARAM_NAME_LABEL,
+						params.label != null ? params.label : jenkinsData
+								.getJobDetails().getDisplayName());
+				context.put(VELO_PARAM_NAME_COLOR,
+						determineStatusColor(params, jenkinsData));
+				context.put(VELO_PARAM_NAME_HYPERLINK, jenkinsData
+						.getJobDetails().getUrl());
 
-			context.put(VELO_PARAM_NAME_SHOWDETAILS, params.showDetails);
-			Message lastRunDateFriendlyFormatted = newFriendlyDateFormatter()
-					.getFormatMessage(sonarData.getLastRunDate());
-			Serializable[] lastRunDateFriendlyFormattedArgs = new Serializable[lastRunDateFriendlyFormatted
-					.getArguments().length];
-			for (int i = 0; i < lastRunDateFriendlyFormattedArgs.length; i++) {
-				lastRunDateFriendlyFormattedArgs[i] = String
-						.valueOf(lastRunDateFriendlyFormatted.getArguments()[i]);
+				context.put(VELO_PARAM_NAME_SHOWDETAILS, params.showDetails);
+				Message lastRunDateFriendlyFormatted = newFriendlyDateFormatter()
+						.getFormatMessage(
+								new Date(jenkinsData
+										.getLastCompletedBuildDetails()
+										.getTimestamp()));
+				Serializable[] lastRunDateFriendlyFormattedArgs;
+				if (lastRunDateFriendlyFormatted.getArguments() == null) {
+					lastRunDateFriendlyFormattedArgs = new Serializable[0];
+				} else {
+					lastRunDateFriendlyFormattedArgs = new Serializable[lastRunDateFriendlyFormatted
+							.getArguments().length];
+					for (int i = 0; i < lastRunDateFriendlyFormattedArgs.length; i++) {
+						lastRunDateFriendlyFormattedArgs[i] = String
+								.valueOf(lastRunDateFriendlyFormatted
+										.getArguments()[i]);
+					}
+				}
+				context.put(VELO_PARAM_NAME_LASTRUNWHEN, i18n.getText(
+						lastRunDateFriendlyFormatted.getKey(),
+						lastRunDateFriendlyFormattedArgs));
+				context.put(VELO_PARAM_NAME_LASTRUNDURATION, GeneralUtil
+						.getCompactDuration(jenkinsData
+								.getLastCompletedBuildDetails().getDuration()));
+				int testFailCount = jenkinsData
+						.getLastCompletedBuildTestReport().getFailCount();
+				int testPassCount = jenkinsData
+						.getLastCompletedBuildTestReport().getPassCount();
+				;
+				int testTotalCount = jenkinsData
+						.getLastCompletedBuildTestReport().getTotalCount();
+				// Because all Jenkins test reports do not have always the same data, sometimes failCount+passCount, sometimes failCount+totalCount
+				if (testTotalCount == 0) {
+					testTotalCount = testFailCount + testPassCount;
+				} else {
+					testPassCount = testTotalCount - testFailCount;
+				}
+				String testInfo = String.valueOf(testPassCount);
+				if (testTotalCount == 0) {
+					testInfo += " test";
+				} else {
+					double ratio = ((double) testPassCount)
+							/ ((double) testTotalCount);
+					testInfo += "/" + testTotalCount + " tests ("
+							+ newPercentFormatter().format(ratio) + ")";
+				}
+				context.put(VELO_PARAM_NAME_TESTINFO, testInfo);
 			}
-			context.put(VELO_PARAM_NAME_LASTRUNWHEN, i18n.getText(
-					lastRunDateFriendlyFormatted.getKey(),
-					lastRunDateFriendlyFormattedArgs));
-			context.put(VELO_PARAM_NAME_LASTRUNDURATION, GeneralUtil
-					.getCompactDuration(sonarData.getLastRunDuration()));
-			context.put(VELO_PARAM_NAME_TESTSUCCESSCOUNT,
-					sonarData.getTestSuccessCount());
-			context.put(VELO_PARAM_NAME_TESTCOUNT, sonarData.getTestCount());
-			context.put(VELO_PARAM_NAME_TESTSUCCESSDENSITY, sonarData
-					.getTestSuccessDensity().getFormattedValue());
-		} catch (SonarResourceNotFoundException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Sonar resource not found !");
+		} catch (ResourceNotFoundException e) {
+			context.put(VELO_PARAM_NAME_LABEL, "Job not found !");
 			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-			context.put(VELO_PARAM_NAME_SONARLINK, params.host
-					+ "/dashboard/index/" + params.resourceId);
+			context.put(VELO_PARAM_NAME_HYPERLINK, params.host + "/job/"
+					+ params.jobName);
 			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
-		} catch (SonarInstanceUnavailableException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Sonar unavailable !");
+		} catch (ServiceUnavailableException e) {
+			context.put(VELO_PARAM_NAME_LABEL, "Service unavailable !");
 			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-			context.put(VELO_PARAM_NAME_SONARLINK, params.host);
+			context.put(VELO_PARAM_NAME_HYPERLINK, params.host);
 			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
 		}
 
 		String result = renderer.render(
 				VelocityUtils.getRenderedTemplate(VELOCITY_TEMPLATE, context),
 				conversionContext);
-		//		System.out.println("Computed macro code:\n" + result);
 		return result;
 	}
 
@@ -218,23 +227,34 @@ public class SonarStatusMacro implements Macro {
 			return parameters.get(paramName);
 	}
 
-	private StatusColor determineStatusColor(Params params, SonarData sonarData) {
+	private StatusColor determineStatusColor(Params params,
+			JenkinsData jenkinsData) {
 		long howOld = System.currentTimeMillis()
-				- sonarData.getLastRunDate().getTime();
+				- jenkinsData.getLastCompletedBuildDetails().getTimestamp();
 		if (params.period > 0 && howOld > (params.period * 3600 * 1000)) {
 			return StatusColor.Grey;
-		} else if (sonarData.getTestSuccessDensity().getValue().doubleValue() >= params.threshold1 * 100) {
-			return StatusColor.Green;
-		} else if (sonarData.getTestSuccessDensity().getValue().doubleValue() >= params.threshold2 * 100) {
-			return StatusColor.Yellow;
 		} else {
-			return StatusColor.Red;
+			switch (jenkinsData.getLastCompletedBuildDetails().getResult()) {
+			case ABORTED:
+				return StatusColor.Red;
+			case FAILURE:
+				return StatusColor.Red;
+			case SUCCESS:
+				return StatusColor.Green;
+			case UNSTABLE:
+				return StatusColor.Yellow;
+			case BUILDING:
+			case REBUILDING:
+			case UNKNOWN:
+			default:
+				return StatusColor.Red;
+			}
 		}
 	}
 
 	private static class Params {
-		String host, resourceId, label;
-		double threshold1, threshold2, period;
+		String host, jobName, label;
+		double period;
 		boolean showDetails;
 	}
 

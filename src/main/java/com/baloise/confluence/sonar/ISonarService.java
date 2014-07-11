@@ -1,14 +1,14 @@
 package com.baloise.confluence.sonar;
 
+import com.baloise.confluence.exception.ResourceNotFoundException;
+import com.baloise.confluence.exception.ServiceUnavailableException;
 import com.baloise.confluence.sonar.bean.SonarData;
-import com.baloise.confluence.sonar.exception.SonarResourceNotFoundException;
-import com.baloise.confluence.sonar.exception.SonarInstanceUnavailableException;
 
 public interface ISonarService {
 
 	/**
 	 * Does fetch in realtime the data for a given resource (project) and from a
-	 * given Sonar instance, returns a populated object in case of success,
+	 * given Sonar instance, returns a populated object in case of success or
 	 * throws a checked exception otherwise.
 	 * 
 	 * @param host
@@ -16,13 +16,13 @@ public interface ISonarService {
 	 * @param resourceId
 	 *            the identifier of the Sonar resource (project)
 	 * @return a bean populated with the realtime data
-	 * @throws SonarInstanceUnavailableException
+	 * @throws ServiceUnavailableException
 	 *             if the specified Sonar instance cannot be reached
-	 * @throws SonarResourceNotFoundException
+	 * @throws ResourceNotFoundException
 	 *             if the Sonar instance does not know the specified resource
 	 *             (project)
 	 */
 	public SonarData fetchData(String host, String resourceId)
-			throws SonarInstanceUnavailableException, SonarResourceNotFoundException;
+			throws ServiceUnavailableException, ResourceNotFoundException;
 
 }

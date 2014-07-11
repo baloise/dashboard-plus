@@ -14,7 +14,7 @@
 	</organization>
 
 	<name>dashboard-plus</name>
-	<description>The Dashboard+ plugin for Confluence provides macros to visualize Sonar and Jenkins status</description>
+	<description>The Dashboard+ plugin for Confluence provides macros to visualize various status information (e.g. from Sonar, Jenkins)</description>
 	<packaging>atlassian-plugin</packaging>
 
 	<dependencies>
@@ -40,6 +40,12 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.offbytwo.jenkins</groupId>
+			<artifactId>jenkins-client</artifactId>
+			<version>0.2.0</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -73,11 +79,8 @@
 				<configuration>
 					<productVersion>${confluence.version}</productVersion>
 					<productDataVersion>${confluence.data.version}</productDataVersion>
-					<!-- <instructions>
-						<Import-Package>
-							org.sonar.wsclient.*;version="2.11"
-						</Import-Package>
-					</instructions> -->
+					<!-- <instructions> <Import-Package> org.sonar.wsclient.*;version="2.11" 
+						</Import-Package> </instructions> -->
 				</configuration>
 			</plugin>
 			<plugin>

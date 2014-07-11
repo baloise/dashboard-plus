@@ -183,7 +183,6 @@
       <attribute value="jar:file:/C:/Users/Public/dev/atlassian-plugin-sdk/repository/com/atlassian/crowd/embedded-crowd-spi/2.7.1/embedded-crowd-spi-2.7.1-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/atlassian/crowd/crowd-remote/2.7.1/crowd-remote-2.7.1.jar">
     <attributes>
       <attribute value="jar:file:/C:/Users/Public/dev/atlassian-plugin-sdk/repository/com/atlassian/crowd/crowd-remote/2.7.1/crowd-remote-2.7.1-javadoc.jar!/" name="javadoc_location"/>
@@ -805,6 +804,13 @@
     </attributes>
   </classpathentry>
   <classpathentry kind="var" path="M2_REPO/com/googlecode/json-simple/json-simple/1.1/json-simple-1.1.jar" sourcepath="M2_REPO/com/googlecode/json-simple/json-simple/1.1/json-simple-1.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/offbytwo/jenkins/jenkins-client/0.2.0/jenkins-client-0.2.0.jar" sourcepath="M2_REPO/com/offbytwo/jenkins/jenkins-client/0.2.0/jenkins-client-0.2.0-sources.jar">
+    <attributes>
+      <attribute value="jar:file:/C:/Users/Public/dev/atlassian-plugin-sdk/repository/com/offbytwo/jenkins/jenkins-client/0.2.0/jenkins-client-0.2.0-javadoc.jar!/" name="javadoc_location"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpclient/4.2.2/httpclient-4.2.2.jar" sourcepath="M2_REPO/org/apache/httpcomponents/httpclient/4.2.2/httpclient-4.2.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpcore/4.2.2/httpcore-4.2.2.jar" sourcepath="M2_REPO/org/apache/httpcomponents/httpcore/4.2.2/httpcore-4.2.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/atlassian/plugins/atlassian-plugins-osgi-testrunner/1.2.0/atlassian-plugins-osgi-testrunner-1.2.0.jar" sourcepath="M2_REPO/com/atlassian/plugins/atlassian-plugins-osgi-testrunner/1.2.0/atlassian-plugins-osgi-testrunner-1.2.0-sources.jar">
     <attributes>
       <attribute value="jar:file:/C:/Users/Public/dev/atlassian-plugin-sdk/repository/com/atlassian/plugins/atlassian-plugins-osgi-testrunner/1.2.0/atlassian-plugins-osgi-testrunner-1.2.0-javadoc.jar!/" name="javadoc_location"/>

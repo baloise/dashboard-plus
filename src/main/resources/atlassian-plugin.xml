@@ -11,9 +11,9 @@
     	</bundle-instructions> -->
 	</plugin-info>
 
-	<!-- add our macro -->
-	<xhtml-macro name="sonar-status" class="com.baloise.confluence.SonarStatusMacro"
-		key="sonar-status"
+	<!-- add our macros -->
+	<xhtml-macro name="sonar-test-status" class="com.baloise.confluence.SonarTestStatusMacro"
+		key="sonar-test-status"
 		icon="/download/resources/${project.groupId}.${project.artifactId}/images/sonarStatusIcon.png">
 		<category name="visuals" />
 		<parameters>
@@ -25,6 +25,21 @@
 			<parameter name="label" type="string"/>
 			<parameter name="threshold1" type="string" required="true" default="1.0"/>
 			<parameter name="threshold2" type="string" required="true" default="0.75"/>
+			<parameter name="period" type="string" default="0"/>
+			<parameter name="showDetails" type="boolean" default="true"/>
+		</parameters>
+	</xhtml-macro>
+	<xhtml-macro name="jenkins-job-status" class="com.baloise.confluence.JenkinsJobStatusMacro"
+		key="jenkins-job-status"
+		icon="/download/resources/${project.groupId}.${project.artifactId}/images/jenkinsStatusIcon.png">
+		<category name="visuals" />
+		<parameters>
+			<parameter name="host" type="string" required="true" default="http://svx-build04.bvch.ch:8080"/>
+			<parameter name="jobName" type="string" required="true" default="PolicyCenter_CI">
+				<option key="showNameInPlaceholder" value="false" />
+            	<option key="showValueInPlaceholder" value="true" />
+            </parameter>
+			<parameter name="label" type="string"/>
 			<parameter name="period" type="string" default="0"/>
 			<parameter name="showDetails" type="boolean" default="true"/>
 		</parameters>
