@@ -19,7 +19,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 	protected static enum StatusColor {
 		Grey, Red, Yellow, Green
 	}
-	
+
 	protected static NumberFormat newPercentFormatter() {
 		//		ConfluenceUserPreferences prefs = userAccessor
 		//				.getConfluenceUserPreferences(AuthenticatedUserThreadLocal
@@ -30,6 +30,5 @@ public abstract class StatusLightBasedMacro implements Macro {
 		result.setMinimumFractionDigits(1);
 		return result;
 	}
-
 
 }

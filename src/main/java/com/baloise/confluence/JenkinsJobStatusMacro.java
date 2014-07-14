@@ -1,9 +1,7 @@
 package com.baloise.confluence;
 
 import java.io.Serializable;
-import java.text.NumberFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Map;
 
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
@@ -29,17 +27,22 @@ import com.baloise.confluence.jenkins.bean.JenkinsData;
 
 public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 
-	private static final String MACRO_PARAM_NAME_HOST = "host";
-	private static final String MACRO_PARAM_NAME_JOBNAME = "jobName";
-	private static final String MACRO_PARAM_NAME_LABEL = "label";
-	private static final String MACRO_PARAM_NAME_PERIOD = "period";
-	private static final String MACRO_PARAM_NAME_SHOWDETAILS = "showDetails";
+	private static final String MACRO_PARAM_NAME_HOST = "host"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_JOBNAME = "jobName"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_LABEL = "label"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_PERIOD = "period"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_SHOWDETAILS = "showDetails"; //$NON-NLS-1$
 
-	private static final String MACRO_PARAM_DEFAULT_HOST = "http://svx-build04.bvch.ch:8080";
-	private static final String MACRO_PARAM_DEFAULT_JOBNAME = "PolicyCenter_CI";
-	private static final String MACRO_PARAM_DEFAULT_LABEL = null;
-	private static final String MACRO_PARAM_DEFAULT_PERIOD = "0";
-	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = "true";
+	private static final String MACRO_PARAM_DEFAULT_HOST = Default
+			.getString("JenkinsJobStatusMacro.host"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_JOBNAME = Default
+			.getString("JenkinsJobStatusMacro.jobName"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_LABEL = Default
+			.getString("JenkinsJobStatusMacro.label"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_PERIOD = Default
+			.getString("JenkinsJobStatusMacro.period"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = Default
+			.getString("JenkinsJobStatusMacro.showDetails"); //$NON-NLS-1$
 
 	/* Automatically injected spring components */
 	// private final XhtmlContent xhtmlUtils;
@@ -91,15 +94,15 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 					params.host, params.jobName);
 
 			if (jenkinsData.getLastCompletedBuildDetails() == null) {
-				context.put(VELO_PARAM_NAME_LABEL, "?");
+				context.put(VELO_PARAM_NAME_LABEL, "?"); //$NON-NLS-1$
 				context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-				context.put(VELO_PARAM_NAME_HYPERLINK, params.host + "/job/"
+				context.put(VELO_PARAM_NAME_HYPERLINK, params.host + "/job/" //$NON-NLS-1$
 						+ params.jobName);
 				context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
 			} else {
-				context.put(VELO_PARAM_NAME_LABEL,
-						params.label != null ? params.label : jenkinsData
-								.getJobDetails().getDisplayName());
+				context.put(VELO_PARAM_NAME_LABEL, params.label != null
+						&& params.label.trim().length() > 0 ? params.label
+						: jenkinsData.getJobDetails().getDisplayName());
 				context.put(VELO_PARAM_NAME_COLOR,
 						determineStatusColor(params, jenkinsData));
 				context.put(VELO_PARAM_NAME_HYPERLINK, jenkinsData
@@ -136,7 +139,7 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				;
 				int testTotalCount = jenkinsData
 						.getLastCompletedBuildTestReport().getTotalCount();
-				// Because all Jenkins test reports do not have always the same data, sometimes failCount+passCount, sometimes failCount+totalCount
+				// Because all Jenkins test reports do not provide always with the same data, sometimes failCount+passCount, sometimes failCount+totalCount
 				if (testTotalCount == 0) {
 					testTotalCount = testFailCount + testPassCount;
 				} else {
@@ -144,23 +147,23 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				}
 				String testInfo = String.valueOf(testPassCount);
 				if (testTotalCount == 0) {
-					testInfo += " test";
+					testInfo += " test"; //$NON-NLS-1$
 				} else {
 					double ratio = ((double) testPassCount)
 							/ ((double) testTotalCount);
-					testInfo += "/" + testTotalCount + " tests ("
-							+ newPercentFormatter().format(ratio) + ")";
+					testInfo += "/" + testTotalCount + " tests (" //$NON-NLS-1$ //$NON-NLS-2$
+							+ newPercentFormatter().format(ratio) + ")"; //$NON-NLS-1$
 				}
 				context.put(VELO_PARAM_NAME_TESTINFO, testInfo);
 			}
 		} catch (ResourceNotFoundException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Job not found !");
+			context.put(VELO_PARAM_NAME_LABEL, "Job not found !"); //$NON-NLS-1$
 			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-			context.put(VELO_PARAM_NAME_HYPERLINK, params.host + "/job/"
+			context.put(VELO_PARAM_NAME_HYPERLINK, params.host + "/job/" //$NON-NLS-1$
 					+ params.jobName);
 			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
 		} catch (ServiceUnavailableException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Service unavailable !");
+			context.put(VELO_PARAM_NAME_LABEL, "Service unavailable !"); //$NON-NLS-1$
 			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
 			context.put(VELO_PARAM_NAME_HYPERLINK, params.host);
 			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
@@ -188,14 +191,14 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 		try {
 			result = Double.parseDouble(paramValue);
 		} catch (NumberFormatException e) {
-			throw new MacroExecutionException("Wrong format: the parameter '"
-					+ paramValue + "' is not a decimal value");
+			throw new MacroExecutionException("Wrong format: the parameter '" //$NON-NLS-1$
+					+ paramValue + "' is not a decimal value"); //$NON-NLS-1$
 		}
 
 		if (result <= minExcl || result > maxIncl) {
-			throw new MacroExecutionException("Wrong value: the parameter '"
-					+ paramValue + "' is out of the expected range " + minExcl
-					+ "-" + maxIncl);
+			throw new MacroExecutionException("Wrong value: the parameter '" //$NON-NLS-1$
+					+ paramValue + "' is out of the expected range " + minExcl //$NON-NLS-1$
+					+ "-" + maxIncl); //$NON-NLS-1$
 		}
 
 		return result;

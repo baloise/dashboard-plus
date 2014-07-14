@@ -29,21 +29,21 @@ import com.baloise.confluence.sonar.bean.SonarData;
 
 public class SonarTestStatusMacro extends StatusLightBasedMacro {
 
-	private static final String MACRO_PARAM_NAME_HOST = "host";
-	private static final String MACRO_PARAM_NAME_RESOURCEID = "resourceId";
-	private static final String MACRO_PARAM_NAME_LABEL = "label";
-	private static final String MACRO_PARAM_NAME_THRESHOLD1 = "threshold1";
-	private static final String MACRO_PARAM_NAME_THRESHOLD2 = "threshold2";
-	private static final String MACRO_PARAM_NAME_PERIOD = "period";
-	private static final String MACRO_PARAM_NAME_SHOWDETAILS = "showDetails";
+	private static final String MACRO_PARAM_NAME_HOST = "host"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_RESOURCEID = "resourceId"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_LABEL = "label"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_THRESHOLD1 = "threshold1"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_THRESHOLD2 = "threshold2"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_PERIOD = "period"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_SHOWDETAILS = "showDetails"; //$NON-NLS-1$
 
-	private static final String MACRO_PARAM_DEFAULT_HOST = "http://itq.bvch.ch/sonar";
-	private static final String MACRO_PARAM_DEFAULT_RESOURCEID = "ch.baloise.testing.st:gwpc-st-TEST";
-	private static final String MACRO_PARAM_DEFAULT_LABEL = null;
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = "1.0";
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = "0.75";
-	private static final String MACRO_PARAM_DEFAULT_PERIOD = "0";
-	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = "true";
+	private static final String MACRO_PARAM_DEFAULT_HOST = Default.getString("SonarTestStatusMacro.host"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_RESOURCEID = Default.getString("SonarTestStatusMacro.projectId"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_LABEL = Default.getString("SonarTestStatusMacro.label"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = Default.getString("SonarTestStatusMacro.threshold1"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = Default.getString("SonarTestStatusMacro.threshold2"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_PERIOD = Default.getString("SonarTestStatusMacro.period"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = Default.getString("SonarTestStatusMacro.showDetails"); //$NON-NLS-1$
 
 	/* Automatically injected spring components */
 	// private final XhtmlContent xhtmlUtils;
@@ -99,13 +99,13 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 			SonarData sonarData = SonarService.createServiceAndFetchData(
 					params.host, params.resourceId);
 
-			context.put(VELO_PARAM_NAME_LABEL,
-					params.label != null ? params.label : sonarData
-							.getResource().getName());
+			context.put(VELO_PARAM_NAME_LABEL, params.label != null
+					&& params.label.trim().length() > 0 ? params.label
+					: sonarData.getResource().getName());
 			context.put(VELO_PARAM_NAME_COLOR,
 					determineStatusColor(params, sonarData));
 			context.put(VELO_PARAM_NAME_HYPERLINK, params.host
-					+ "/dashboard/index/" + sonarData.getResource().getId());
+					+ "/dashboard/index/" + sonarData.getResource().getId()); //$NON-NLS-1$
 
 			context.put(VELO_PARAM_NAME_SHOWDETAILS, params.showDetails);
 			Message lastRunDateFriendlyFormatted = newFriendlyDateFormatter()
@@ -129,27 +129,27 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 					.getCompactDuration(sonarData.getLastRunDuration()));
 			String testInfo;
 			if (sonarData.getTestCount() == 0) {
-				testInfo = "0 test";
+				testInfo = "0 test"; //$NON-NLS-1$
 			} else {
-				testInfo = sonarData.getTestSuccessCount() + "/"
-						+ sonarData.getTestCount() + " tests";
+				testInfo = sonarData.getTestSuccessCount() + "/" //$NON-NLS-1$
+						+ sonarData.getTestCount() + " tests"; //$NON-NLS-1$
 			}
 			Measure testSuccessDensity = sonarData.getTestSuccessDensity();
 			if (testSuccessDensity != null) {
-				testInfo += " ("
+				testInfo += " (" //$NON-NLS-1$
 						+ newPercentFormatter()
 								.format(testSuccessDensity.getValue()
-										.doubleValue() / 100d) + ")";
+										.doubleValue() / 100d) + ")"; //$NON-NLS-1$
 			}
 			context.put(VELO_PARAM_NAME_TESTINFO, testInfo);
 		} catch (ResourceNotFoundException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Project not found !");
+			context.put(VELO_PARAM_NAME_LABEL, "Project not found !"); //$NON-NLS-1$
 			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
 			context.put(VELO_PARAM_NAME_HYPERLINK, params.host
-					+ "/dashboard/index/" + params.resourceId);
+					+ "/dashboard/index/" + params.resourceId); //$NON-NLS-1$
 			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
 		} catch (ServiceUnavailableException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Service unavailable !");
+			context.put(VELO_PARAM_NAME_LABEL, "Service unavailable !"); //$NON-NLS-1$
 			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
 			context.put(VELO_PARAM_NAME_HYPERLINK, params.host);
 			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
@@ -177,14 +177,14 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 		try {
 			result = Double.parseDouble(paramValue);
 		} catch (NumberFormatException e) {
-			throw new MacroExecutionException("Wrong format: the parameter '"
-					+ paramValue + "' is not a decimal value");
+			throw new MacroExecutionException("Wrong format: the parameter '" //$NON-NLS-1$
+					+ paramValue + "' is not a decimal value"); //$NON-NLS-1$
 		}
 
 		if (result <= minExcl || result > maxIncl) {
-			throw new MacroExecutionException("Wrong value: the parameter '"
-					+ paramValue + "' is out of the expected range " + minExcl
-					+ "-" + maxIncl);
+			throw new MacroExecutionException("Wrong value: the parameter '" //$NON-NLS-1$
+					+ paramValue + "' is out of the expected range " + minExcl //$NON-NLS-1$
+					+ "-" + maxIncl); //$NON-NLS-1$
 		}
 
 		return result;
