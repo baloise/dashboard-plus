@@ -22,6 +22,7 @@ import com.atlassian.confluence.util.GeneralUtil;
 import com.atlassian.confluence.util.i18n.Message;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
+import com.atlassian.user.User;
 import com.baloise.confluence.exception.ResourceNotFoundException;
 import com.baloise.confluence.exception.ServiceUnavailableException;
 import com.baloise.confluence.sonar.SonarService;
@@ -37,13 +38,20 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_PERIOD = "period"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_SHOWDETAILS = "showDetails"; //$NON-NLS-1$
 
-	private static final String MACRO_PARAM_DEFAULT_HOST = Default.getString("SonarTestStatusMacro.host"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_RESOURCEID = Default.getString("SonarTestStatusMacro.projectId"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_LABEL = Default.getString("SonarTestStatusMacro.label"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = Default.getString("SonarTestStatusMacro.threshold1"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = Default.getString("SonarTestStatusMacro.threshold2"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_PERIOD = Default.getString("SonarTestStatusMacro.period"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = Default.getString("SonarTestStatusMacro.showDetails"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_HOST = Default
+			.getString("SonarTestStatusMacro.host"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_RESOURCEID = Default
+			.getString("SonarTestStatusMacro.projectId"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_LABEL = Default
+			.getString("SonarTestStatusMacro.label"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = Default
+			.getString("SonarTestStatusMacro.threshold1"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = Default
+			.getString("SonarTestStatusMacro.threshold2"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_PERIOD = Default
+			.getString("SonarTestStatusMacro.period"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = Default
+			.getString("SonarTestStatusMacro.showDetails"); //$NON-NLS-1$
 
 	/* Automatically injected spring components */
 	// private final XhtmlContent xhtmlUtils;
@@ -191,14 +199,19 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	}
 
 	private FriendlyDateFormatter newFriendlyDateFormatter() {
-		// Get current user's timezone.
-		ConfluenceUserPreferences prefs = userAccessor
-				.getConfluenceUserPreferences(AuthenticatedUserThreadLocal
-						.get());
-		TimeZone userTimezone = prefs.getTimeZone();
-
+		// Get current user's timezone, or default one
+		User authUser = AuthenticatedUserThreadLocal.getUser();
+		TimeZone timeZone;
+		if (authUser == null) {
+			// anonymous
+			timeZone = TimeZone.getDefault();
+		} else {
+			ConfluenceUserPreferences prefs = userAccessor
+					.getConfluenceUserPreferences(authUser);
+			timeZone = prefs.getTimeZone();
+		}
 		// Build date formatter
-		DateFormatter dateFormatter = new DateFormatter(userTimezone,
+		DateFormatter dateFormatter = new DateFormatter(timeZone,
 				formatSettingsManager, localeManager);
 
 		// Build "friendly" date formatter

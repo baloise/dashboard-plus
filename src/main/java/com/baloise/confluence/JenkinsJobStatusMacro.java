@@ -20,6 +20,7 @@ import com.atlassian.confluence.util.GeneralUtil;
 import com.atlassian.confluence.util.i18n.Message;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
+import com.atlassian.user.User;
 import com.baloise.confluence.exception.ResourceNotFoundException;
 import com.baloise.confluence.exception.ServiceUnavailableException;
 import com.baloise.confluence.jenkins.JenkinsService;
@@ -205,14 +206,19 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 	}
 
 	private FriendlyDateFormatter newFriendlyDateFormatter() {
-		// Get current user's timezone.
-		ConfluenceUserPreferences prefs = userAccessor
-				.getConfluenceUserPreferences(AuthenticatedUserThreadLocal
-						.get());
-		TimeZone userTimezone = prefs.getTimeZone();
-
+		// Get current user's timezone, or default one
+		User authUser = AuthenticatedUserThreadLocal.getUser();
+		TimeZone timeZone;
+		if (authUser == null) {
+			// anonymous
+			timeZone = TimeZone.getDefault();
+		} else {
+			ConfluenceUserPreferences prefs = userAccessor
+					.getConfluenceUserPreferences(authUser);
+			timeZone = prefs.getTimeZone();
+		}
 		// Build date formatter
-		DateFormatter dateFormatter = new DateFormatter(userTimezone,
+		DateFormatter dateFormatter = new DateFormatter(timeZone,
 				formatSettingsManager, localeManager);
 
 		// Build "friendly" date formatter
