@@ -18,7 +18,6 @@ import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
 import com.atlassian.confluence.user.ConfluenceUserPreferences;
 import com.atlassian.confluence.user.UserAccessor;
-import com.atlassian.confluence.util.GeneralUtil;
 import com.atlassian.confluence.util.i18n.Message;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
@@ -133,8 +132,10 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 			context.put(VELO_PARAM_NAME_LASTRUNWHEN, i18n.getText(
 					lastRunDateFriendlyFormatted.getKey(),
 					lastRunDateFriendlyFormattedArgs));
-			context.put(VELO_PARAM_NAME_LASTRUNDURATION, GeneralUtil
-					.getCompactDuration(sonarData.getLastRunDuration()));
+
+			context.put(VELO_PARAM_NAME_LASTRUNDURATION,
+					formatDuration(sonarData.getLastRunDuration()));
+
 			String testInfo;
 			if (sonarData.getTestCount() == 0) {
 				testInfo = "0 test"; //$NON-NLS-1$

@@ -50,8 +50,23 @@ public class SonarData {
 		}
 	}
 
+	public int getTestErrorCount() {
+		Integer measure = resource
+				.getMeasureIntValue(SonarService.SONAR_METRIC_KEY_TEST_ERRORS);
+		if (measure == null) {
+			return 0;
+		} else {
+			return measure.intValue();
+		}
+	}
+
 	public int getTestSuccessCount() {
-		return getTestCount() - getTestFailureCount();
+		int result = getTestCount() - getTestFailureCount() - getTestErrorCount();
+		// Ensure preventively we dont return a value below 0, is probably not necessary but we never know
+		if (result < 0) {
+			result = 0;
+		}
+		return result;
 	}
 
 	public Measure getTestSuccessDensity() {

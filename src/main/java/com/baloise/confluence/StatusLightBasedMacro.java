@@ -31,4 +31,26 @@ public abstract class StatusLightBasedMacro implements Macro {
 		return result;
 	}
 
+	protected static String formatDuration(long duration) {
+		long dayCount = duration / (1000 * 60 * 60 * 24);
+		long hourCount = (duration - dayCount * 1000 * 60 * 60 * 24)
+				/ (1000 * 60 * 60);
+		long minCount = (duration - dayCount * 1000 * 60 * 60 * 24 - hourCount * 1000 * 60 * 60)
+				/ (1000 * 60);
+		long secCount = (duration - dayCount * 1000 * 60 * 60 * 24 - hourCount
+				* 1000 * 60 * 60 - minCount * 1000 * 60) / 1000;
+		//		long millisCount = duration - dayCount * 1000 * 60 * 60 * 24
+		//				- hourCount * 1000 * 60 * 60 - minCount * 1000 * 60 - secCount
+		//				* 1000;
+
+		String result = "";
+		if (dayCount > 0)
+			result += dayCount + "d";
+		if (hourCount > 0)
+			result += hourCount + "h";
+		result += minCount + "'";
+		result += secCount + "''";
+		return result;
+	}
+
 }

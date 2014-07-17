@@ -10,7 +10,7 @@ import com.baloise.confluence.sonar.bean.SonarData;
 
 public class SonarService implements ISonarService {
 
-	private static final int SONAR_TIMEOUT_IN_SECONDS = 1;
+	private static final int SONAR_TIMEOUT_IN_SECONDS = 30;
 	public static final String SONAR_METRIC_KEY_TEST_SUCCESS_DENSITY = "test_success_density";
 	public static final String SONAR_METRIC_KEY_TEST_FAILURES = "test_failures";
 	public static final String SONAR_METRIC_KEY_TEST_ERRORS = "test_errors";

@@ -16,7 +16,6 @@ import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
 import com.atlassian.confluence.user.ConfluenceUserPreferences;
 import com.atlassian.confluence.user.UserAccessor;
-import com.atlassian.confluence.util.GeneralUtil;
 import com.atlassian.confluence.util.i18n.Message;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
@@ -130,9 +129,10 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				context.put(VELO_PARAM_NAME_LASTRUNWHEN, i18n.getText(
 						lastRunDateFriendlyFormatted.getKey(),
 						lastRunDateFriendlyFormattedArgs));
-				context.put(VELO_PARAM_NAME_LASTRUNDURATION, GeneralUtil
-						.getCompactDuration(jenkinsData
+				context.put(VELO_PARAM_NAME_LASTRUNDURATION,
+						formatDuration(jenkinsData
 								.getLastCompletedBuildDetails().getDuration()));
+
 				int testFailCount = jenkinsData
 						.getLastCompletedBuildTestReport().getFailCount();
 				int testPassCount = jenkinsData
