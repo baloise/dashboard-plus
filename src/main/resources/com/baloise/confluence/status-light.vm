@@ -2,7 +2,7 @@
 <div class="statuslight">
 	<a style="color: black; text-decoration: none;" href="${hyperlink}" target="_blank" title="Drilldown">
 ##	<span class="clickable" href="${hyperlink}" title="Drilldown"> 
-		  <span style="font-size: x-small;">
+		  <span style="font-size: x-small; white-space: nowrap;">
 		      #if ( ${showDetails} )
 				  	${lastRunWhen} [${lastRunDuration}]
 		      #end
@@ -14,7 +14,7 @@
 	      </ac:macro>
 		  <br/>
 	      #if ( ${showDetails} )
-			  <span style="font-size: x-small;">${testInfo}</span>
+			  <span style="font-size: x-small; white-space: nowrap;">${testInfo}</span>
 	      #end
 ##	</span>
 	</a>

@@ -37,8 +37,13 @@ public abstract class StatusLightBasedMacro implements Macro {
 				/ (1000 * 60 * 60);
 		long minCount = (duration - dayCount * 1000 * 60 * 60 * 24 - hourCount * 1000 * 60 * 60)
 				/ (1000 * 60);
-		long secCount = (duration - dayCount * 1000 * 60 * 60 * 24 - hourCount
-				* 1000 * 60 * 60 - minCount * 1000 * 60) / 1000;
+		long secCount;
+		if (duration < 1000) {
+			secCount = 1;
+		} else {
+			secCount = (duration - dayCount * 1000 * 60 * 60 * 24 - hourCount
+					* 1000 * 60 * 60 - minCount * 1000 * 60) / 1000;
+		}
 		//		long millisCount = duration - dayCount * 1000 * 60 * 60 * 24
 		//				- hourCount * 1000 * 60 * 60 - minCount * 1000 * 60 - secCount
 		//				* 1000;
@@ -52,5 +57,4 @@ public abstract class StatusLightBasedMacro implements Macro {
 		result += secCount + "''";
 		return result;
 	}
-
 }
