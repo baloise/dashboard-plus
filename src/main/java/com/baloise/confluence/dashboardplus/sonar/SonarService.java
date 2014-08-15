@@ -1,12 +1,12 @@
-package com.baloise.confluence.sonar;
+package com.baloise.confluence.dashboardplus.sonar;
 
 import org.sonar.wsclient.Sonar;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
 
-import com.baloise.confluence.exception.ResourceNotFoundException;
-import com.baloise.confluence.exception.ServiceUnavailableException;
-import com.baloise.confluence.sonar.bean.SonarData;
+import com.baloise.confluence.dashboardplus.exception.ResourceNotFoundException;
+import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableException;
+import com.baloise.confluence.dashboardplus.sonar.bean.SonarData;
 
 public class SonarService implements ISonarService {
 

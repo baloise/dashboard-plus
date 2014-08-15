@@ -12,7 +12,7 @@
 	</plugin-info>
 
 	<!-- add our macros -->
-	<xhtml-macro name="sonar-test-status" class="com.baloise.confluence.SonarTestStatusMacro"
+	<xhtml-macro name="sonar-test-status" class="com.baloise.confluence.dashboardplus.SonarTestStatusMacro"
 		key="sonar-test-status"
 		icon="/download/resources/${project.groupId}.${project.artifactId}/images/sonarStatusIcon.png">
 		<category name="visuals" />
@@ -29,7 +29,7 @@
 			<parameter name="showDetails" type="boolean" default="true"/>
 		</parameters>
 	</xhtml-macro>
-	<xhtml-macro name="jenkins-job-status" class="com.baloise.confluence.JenkinsJobStatusMacro"
+	<xhtml-macro name="jenkins-job-status" class="com.baloise.confluence.dashboardplus.JenkinsJobStatusMacro"
 		key="jenkins-job-status"
 		icon="/download/resources/${project.groupId}.${project.artifactId}/images/jenkinsStatusIcon.png">
 		<category name="visuals" />
@@ -61,8 +61,8 @@
 	</web-resource>
 
 	<!-- publish our component -->
-	<!-- <component key="myPluginComponent" class="com.baloise.confluence.MyPluginComponentImpl" 
-		public="true"> <interface>com.baloise.confluence.MyPluginComponent</interface> 
+	<!-- <component key="myPluginComponent" class="com.baloise.confluence.dashboardplus.MyPluginComponentImpl" 
+		public="true"> <interface>com.baloise.confluence.dashboardplus.MyPluginComponent</interface> 
 		</component> -->
 
 	<!-- import from the product container -->

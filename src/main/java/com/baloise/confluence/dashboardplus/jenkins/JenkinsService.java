@@ -1,13 +1,13 @@
-package com.baloise.confluence.jenkins;
+package com.baloise.confluence.dashboardplus.jenkins;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import com.baloise.confluence.exception.ResourceNotFoundException;
-import com.baloise.confluence.exception.ServiceUnavailableException;
-import com.baloise.confluence.jenkins.bean.JenkinsData;
-import com.baloise.confluence.jenkins.ext.JenkinsClientExt;
+import com.baloise.confluence.dashboardplus.exception.ResourceNotFoundException;
+import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableException;
+import com.baloise.confluence.dashboardplus.jenkins.bean.JenkinsData;
+import com.baloise.confluence.dashboardplus.jenkins.ext.JenkinsClientExt;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.JobWithDetails;

@@ -1,8 +1,8 @@
-package com.baloise.confluence.jenkins;
+package com.baloise.confluence.dashboardplus.jenkins;
 
-import com.baloise.confluence.exception.ResourceNotFoundException;
-import com.baloise.confluence.exception.ServiceUnavailableException;
-import com.baloise.confluence.jenkins.bean.JenkinsData;
+import com.baloise.confluence.dashboardplus.exception.ResourceNotFoundException;
+import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableException;
+import com.baloise.confluence.dashboardplus.jenkins.bean.JenkinsData;
 
 public interface IJenkinsService {
 

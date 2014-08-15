@@ -1,10 +1,10 @@
-package com.baloise.confluence;
+package com.baloise.confluence.dashboardplus;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class Default {
-	private static final String BUNDLE_NAME = "com.baloise.confluence.default"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "com.baloise.confluence.dashboardplus.default"; //$NON-NLS-1$
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
 			.getBundle(BUNDLE_NAME);

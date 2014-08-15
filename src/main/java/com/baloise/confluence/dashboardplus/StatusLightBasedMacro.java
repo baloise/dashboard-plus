@@ -1,4 +1,4 @@
-package com.baloise.confluence;
+package com.baloise.confluence.dashboardplus;
 
 import java.text.NumberFormat;
 
@@ -6,7 +6,7 @@ import com.atlassian.confluence.macro.Macro;
 
 public abstract class StatusLightBasedMacro implements Macro {
 
-	protected static final String VELOCITY_TEMPLATE = "com/baloise/confluence/status-light.vm";
+	protected static final String VELOCITY_TEMPLATE = "com/baloise/confluence/dashboardplus/status-light.vm";
 
 	protected static final String VELO_PARAM_NAME_TESTINFO = "testInfo";
 	protected static final String VELO_PARAM_NAME_LASTRUNDURATION = "lastRunDuration";

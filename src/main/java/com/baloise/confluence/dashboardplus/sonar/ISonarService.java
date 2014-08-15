@@ -1,8 +1,8 @@
-package com.baloise.confluence.sonar;
+package com.baloise.confluence.dashboardplus.sonar;
 
-import com.baloise.confluence.exception.ResourceNotFoundException;
-import com.baloise.confluence.exception.ServiceUnavailableException;
-import com.baloise.confluence.sonar.bean.SonarData;
+import com.baloise.confluence.dashboardplus.exception.ResourceNotFoundException;
+import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableException;
+import com.baloise.confluence.dashboardplus.sonar.bean.SonarData;
 
 public interface ISonarService {
 

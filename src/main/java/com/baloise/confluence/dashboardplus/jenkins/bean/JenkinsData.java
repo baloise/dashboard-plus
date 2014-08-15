@@ -1,6 +1,6 @@
-package com.baloise.confluence.jenkins.bean;
+package com.baloise.confluence.dashboardplus.jenkins.bean;
 
-import com.baloise.confluence.jenkins.ext.BuildWithTestReport;
+import com.baloise.confluence.dashboardplus.jenkins.ext.BuildWithTestReport;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 

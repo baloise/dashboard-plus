@@ -1,4 +1,4 @@
-package com.baloise.confluence.jenkins.ext;
+package com.baloise.confluence.dashboardplus.jenkins.ext;
 
 import com.offbytwo.jenkins.model.BaseModel;
 
