@@ -91,6 +91,16 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<generateProjectInfo>false</generateProjectInfo>
+					<generateReports>false</generateReports>
+					<generateSitemap>false</generateSitemap>
+					<generatedSiteDirectory>false</generatedSiteDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
 				<version>0.10</version>
@@ -163,7 +173,7 @@
 			<url>https://maven.atlassian.com/repository/public</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 
 
 </project>
