@@ -1,5 +1,9 @@
 language: java
-before_script:
-  - git config --global user.name baopso 
-  - git config --global user.email group.ch_git@baloise.ch 
-script: mvn clean package site
+deploy:
+  provider: releases
+  api-key: "b0be1546ac1b924289b89b9c77241177cbc6c596"
+  file: "target/dashboard-plus-1.1.0.jar"
+  skip_cleanup: true
+  on:
+    tags: true
+    all_branches: true
