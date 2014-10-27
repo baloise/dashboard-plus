@@ -1,5 +1,5 @@
 language: java
 before_script:
-  - git config user.name baopso 
-  - git config user.email group.ch_git@baloise.ch 
+  - git config --global user.name baopso 
+  - git config --global user.email group.ch_git@baloise.ch 
 script: mvn clean package site
