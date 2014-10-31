@@ -31,7 +31,7 @@ import com.offbytwo.jenkins.model.BaseModel;
 public class JenkinsHttpClient {
 	
 	private static final int SO_TIMEOUT_IN_MILLISECONDS = 3000;
-	private static final int CONNECTION_TIMEOUT_IN_MILLISECONDS = 1000;
+	private static final int CONNECTION_TIMEOUT_IN_MILLISECONDS = 500;
 	
 	private URI uri;
 	private DefaultHttpClient client;
