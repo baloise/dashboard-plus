@@ -54,6 +54,9 @@ public abstract class StatusLightBasedMacro implements Macro {
 		if (hourCount > 0)
 			result += hourCount + "h";
 		result += minCount + "'";
+		if (secCount<10) {
+			result += "0";
+		}
 		result += secCount + "''";
 		return result;
 	}

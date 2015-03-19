@@ -244,19 +244,18 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 			return StatusColor.Grey;
 		} else {
 			switch (jenkinsData.getLastCompletedBuildDetails().getResult()) {
-			case ABORTED:
-				return StatusColor.Red;
 			case FAILURE:
 				return StatusColor.Red;
 			case SUCCESS:
 				return StatusColor.Green;
 			case UNSTABLE:
 				return StatusColor.Yellow;
+			case ABORTED:
 			case BUILDING:
 			case REBUILDING:
 			case UNKNOWN:
 			default:
-				return StatusColor.Red;
+				return StatusColor.Grey;
 			}
 		}
 	}
