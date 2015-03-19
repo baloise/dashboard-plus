@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.baloise.confluence</groupId>
 	<artifactId>dashboard-plus</artifactId>
-	<version>1.1.0-baloise</version>
+	<version>1.1.1</version>
 
 	<organization>
 		<name>Basler Versicherungen</name>
@@ -94,9 +94,9 @@
 	</build>
 
 	<properties>
-		<confluence.version>5.6.3</confluence.version>
-		<confluence.data.version>5.6.3</confluence.data.version>
-		<amps.version>5.0.3</amps.version>
+		<confluence.version>5.7.1</confluence.version>
+		<confluence.data.version>5.7.1</confluence.data.version>
+		<amps.version>5.0.13</amps.version>
 		<plugin.testrunner.version>1.2.0</plugin.testrunner.version>
 	</properties>
 
