@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 import com.baloise.confluence.dashboardplus.exception.ResourceNotFoundException;
 import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableException;
 import com.baloise.confluence.dashboardplus.jenkins.bean.JenkinsData;
-import com.baloise.confluence.dashboardplus.jenkins.ext.JenkinsClientExt;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.JobWithDetails;
@@ -44,8 +43,7 @@ public class JenkinsService implements IJenkinsService {
 			if (lastCompletedBuild != null) {
 				result.setLastCompletedBuildDetails(lastCompletedBuild
 						.details());
-				result.setLastCompletedBuildTestReport(JenkinsClientExt
-						.getTestReport(lastCompletedBuild));
+				result.setLastCompletedBuildTestReport(lastCompletedBuild.testReport());
 			}
 
 		} catch (IOException e) {
