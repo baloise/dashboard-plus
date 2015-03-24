@@ -16,6 +16,7 @@ public class SonarService implements ISonarService {
 	public static final String SONAR_METRIC_KEY_TEST_ERRORS = "test_errors";
 	public static final String SONAR_METRIC_KEY_TESTS = "tests";
 	public static final String SONAR_METRIC_KEY_TEST_EXECUTION_TIME = "test_execution_time";
+	public static final String SONAR_METRIC_KEY_TEST_SKIPPED = "skipped_tests";
 
 	public static SonarData createServiceAndFetchData(String host,
 			String resourceId) throws ServiceUnavailableException,
@@ -34,7 +35,8 @@ public class SonarService implements ISonarService {
 					SONAR_METRIC_KEY_TESTS, SONAR_METRIC_KEY_TEST_ERRORS,
 					SONAR_METRIC_KEY_TEST_FAILURES,
 					SONAR_METRIC_KEY_TEST_SUCCESS_DENSITY,
-					SONAR_METRIC_KEY_TEST_EXECUTION_TIME);
+					SONAR_METRIC_KEY_TEST_EXECUTION_TIME,
+					SONAR_METRIC_KEY_TEST_SKIPPED);
 			query.setTimeoutMilliseconds(SONAR_TIMEOUT_IN_SECONDS * 1000);
 			Resource resource = sonar.find(query);
 

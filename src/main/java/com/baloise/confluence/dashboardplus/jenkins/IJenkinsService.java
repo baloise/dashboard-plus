@@ -15,12 +15,15 @@ public interface IJenkinsService {
 	 *            the URL of the Jenkins instance
 	 * @param jobName
 	 *            the name of the Jenkins job
+	 * @param boolean recursiveChildLoading whether the child test reports are
+	 *        required or not
 	 * @return a bean populated with the realtime data
 	 * @throws ServiceUnavailableException
 	 *             if the specified Jenkins instance cannot be reached
 	 * @throws ResourceNotFoundException
 	 *             if the Jenkins instance does not know the specified job
 	 */
-	public JenkinsData fetchData(String host, String jobName)
-			throws ServiceUnavailableException, ResourceNotFoundException;
+	public JenkinsData fetchData(String host, String jobName,
+			boolean recursiveChildLoading) throws ServiceUnavailableException,
+			ResourceNotFoundException;
 }

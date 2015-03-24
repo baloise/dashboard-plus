@@ -12,12 +12,32 @@ public abstract class StatusLightBasedMacro implements Macro {
 	protected static final String VELO_PARAM_NAME_LASTRUNDURATION = "lastRunDuration";
 	protected static final String VELO_PARAM_NAME_LASTRUNWHEN = "lastRunWhen";
 	protected static final String VELO_PARAM_NAME_SHOWDETAILS = "showDetails";
-	protected static final String VELO_PARAM_NAME_HYPERLINK = "hyperlink";
+	protected static final String VELO_PARAM_NAME_HYPERLINK_URL = "hyperlinkURL";
+	protected static final String VELO_PARAM_NAME_HYPERLINK_TARGET = "hyperlinkTarget";
 	protected static final String VELO_PARAM_NAME_COLOR = "color";
 	protected static final String VELO_PARAM_NAME_LABEL = "label";
+	protected static final String VELO_PARAM_NAME_APPLY_OUTLINE = "applyOutline";
+	protected static final String VELO_PARAM_NAME_TESTDETAILS = "testDetails";
+	protected static final String VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP = "showFailedTestDetailsAsTooltip";
 
-	protected static enum StatusColor {
-		Grey, Red, Yellow, Green
+	public static enum StatusColor {
+		// Take care to the position of the constants, it is used on aggregation
+		Blue, Green, Yellow, Red, Grey;
+
+		public String getCSSClass(boolean applyOutline) {
+			String result;
+			switch (StatusColor.valueOf(name())) {
+			case Grey:
+				result = "";
+				break;
+			default:
+				result = "dplus-light-" + name().toLowerCase();
+			}
+			if (applyOutline) {
+				result += " dplus-light-subtle";
+			}
+			return result;
+		}
 	}
 
 	protected static NumberFormat newPercentFormatter() {
@@ -54,7 +74,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 		if (hourCount > 0)
 			result += hourCount + "h";
 		result += minCount + "'";
-		if (secCount<10) {
+		if (secCount < 10) {
 			result += "0";
 		}
 		result += secCount + "''";

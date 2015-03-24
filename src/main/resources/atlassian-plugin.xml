@@ -23,10 +23,15 @@
             	<option key="showValueInPlaceholder" value="true" />
             </parameter>
 			<parameter name="label" type="string"/>
+			<parameter name="simpleThresholdModel" type="boolean" default="false"/>
 			<parameter name="threshold1" type="string" required="true" default="1.0"/>
 			<parameter name="threshold2" type="string" required="true" default="0.75"/>
 			<parameter name="period" type="string" default="0"/>
 			<parameter name="showDetails" type="boolean" default="true"/>
+			<parameter name="hyperlinkURL" type="string"/>
+			<parameter name="hyperlinkTarget" type="string" default="_blank"/>
+			<parameter name="inclSkippedTests" type="boolean" default="false"/>
+			<parameter name="applyOutlineStyle" type="boolean" default="false"/>
 		</parameters>
 	</xhtml-macro>
 	<xhtml-macro name="jenkins-job-status" class="com.baloise.confluence.dashboardplus.JenkinsJobStatusMacro"
@@ -42,6 +47,15 @@
 			<parameter name="label" type="string"/>
 			<parameter name="period" type="string" default="0"/>
 			<parameter name="showDetails" type="boolean" default="true"/>
+			<parameter name="doesReflectTest" type="boolean" default="false"/>
+			<parameter name="simpleThresholdModel" type="boolean" default="false"/>
+			<parameter name="threshold1" type="string" required="true" default="1.0"/>
+			<parameter name="threshold2" type="string" required="true" default="0.75"/>
+			<parameter name="hyperlinkURL" type="string"/>
+			<parameter name="hyperlinkTarget" type="string" default="_blank"/>
+			<parameter name="inclSkippedTests" type="boolean" default="false"/>
+			<parameter name="applyOutlineStyle" type="boolean" default="false"/>
+			<parameter name="showFailedTestDetailsAsTooltip" type="boolean" default="true"/>
 		</parameters>
 	</xhtml-macro>
 

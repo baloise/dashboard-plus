@@ -24,6 +24,9 @@ import com.baloise.confluence.dashboardplus.exception.ResourceNotFoundException;
 import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableException;
 import com.baloise.confluence.dashboardplus.jenkins.JenkinsService;
 import com.baloise.confluence.dashboardplus.jenkins.bean.JenkinsData;
+import com.offbytwo.jenkins.model.TestReport;
+import com.offbytwo.jenkins.model.TestReportSuite;
+import com.offbytwo.jenkins.model.TestReportSuiteCase;
 
 public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 
@@ -32,6 +35,15 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_LABEL = "label"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_PERIOD = "period"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_SHOWDETAILS = "showDetails"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_DOESREFLECTTEST = "doesReflectTest"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_SIMPLETHRESHOLDMODEL = "simpleThresholdModel"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_THRESHOLD1 = "threshold1"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_THRESHOLD2 = "threshold2"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_HYPERLINKURL = "hyperlinkURL"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_INCLSKIPPEDTESTS = "inclSkippedTests"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_HYPERLINKTARGET = "hyperlinkTarget";
+	private static final String MACRO_PARAM_NAME_APPLYOUTLINESTYLE = "applyOutlineStyle";
+	private static final String MACRO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP = "showFailedTestDetailsAsTooltip";
 
 	private static final String MACRO_PARAM_DEFAULT_HOST = Default
 			.getString("JenkinsJobStatusMacro.host"); //$NON-NLS-1$
@@ -43,6 +55,24 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 			.getString("JenkinsJobStatusMacro.period"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = Default
 			.getString("JenkinsJobStatusMacro.showDetails"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_DOESREFLECTTEST = Default
+			.getString("JenkinsJobStatusMacro.doesReflectTest"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_SIMPLETHRESHOLDMODEL = Default
+			.getString("JenkinsJobStatusMacro.simpleThresholdModel"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = Default
+			.getString("JenkinsJobStatusMacro.threshold1"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = Default
+			.getString("JenkinsJobStatusMacro.threshold2"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = Default
+			.getString("JenkinsJobStatusMacro.hyperlinkURL"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS = Default
+			.getString("JenkinsJobStatusMacro.inclSkippedTests"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = Default
+			.getString("JenkinsJobStatusMacro.hyperlinkTarget"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = Default
+			.getString("JenkinsJobStatusMacro.applyOutlineStyle"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_SHOWFAILEDTESTDETAILSASTOOLTIP = Default
+			.getString("JenkinsJobStatusMacro.showFailedTestDetailsAsTooltip"); //$NON-NLS-1$
 
 	/* Automatically injected spring components */
 	// private final XhtmlContent xhtmlUtils;
@@ -71,6 +101,180 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 	@Override
 	public String execute(Map<String, String> parameters, String bodyContent,
 			ConversionContext conversionContext) throws MacroExecutionException {
+		Params params = extractParams(parameters);
+
+		Map<String, Object> veloContext = MacroUtils.defaultVelocityContext();
+		try {
+			String[] splitMax = params.jobName.split(" \\[=\\] ");
+			String[] splitAdd = params.jobName.split(" \\[\\+\\] ");
+
+			if (splitAdd.length > 1 && splitMax.length > 1) {
+				throw new MacroExecutionException(
+						"Use either ' [=] ' or ' [+] ' as job separator for an aggregation, not both");
+			}
+
+			String[] split = splitMax;
+			if (splitAdd.length > splitMax.length) {
+				split = splitAdd;
+			}
+
+			JenkinsData primaryJenkinsData = JenkinsService
+					.createServiceAndFetchData(params.host, split[0],
+							params.showFailedTestDetailsAsTooltip);
+			StatusLightData primarySLData = evaluateJenkinsData(params,
+					primaryJenkinsData);
+
+			for (int i = 1; i < split.length; i++) {
+				try {
+					JenkinsData secondaryJenkinsData = JenkinsService
+							.createServiceAndFetchData(params.host, split[i],
+									params.showFailedTestDetailsAsTooltip);
+					StatusLightData secondarySLData = evaluateJenkinsData(
+							params, secondaryJenkinsData);
+					primarySLData.aggregateWith(secondarySLData,
+							split == splitAdd);
+					continue;
+				} catch (ResourceNotFoundException e) {
+				} catch (ServiceUnavailableException e) {
+				}
+				StatusLightData slDataOnException = new StatusLightData();
+				slDataOnException.setColor(StatusColor.Grey);
+				primarySLData.aggregateWith(slDataOnException,
+						split == splitAdd);
+			}
+
+			populateVeloContext(params, veloContext, primaryJenkinsData,
+					primarySLData);
+
+		} catch (ResourceNotFoundException e) {
+			veloContext.put(VELO_PARAM_NAME_LABEL, "?"); //$NON-NLS-1$
+			veloContext.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.host
+					+ "/job/" //$NON-NLS-1$
+					+ params.jobName);
+			veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+		} catch (ServiceUnavailableException e) {
+			veloContext.put(VELO_PARAM_NAME_LABEL, "!"); //$NON-NLS-1$
+			veloContext.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.host);
+			veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+		}
+		veloContext.put(VELO_PARAM_NAME_HYPERLINK_TARGET,
+				params.hyperlinkTarget);
+		veloContext
+				.put(VELO_PARAM_NAME_APPLY_OUTLINE, params.applyOutlineStyle);
+		veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP,
+				params.showFailedTestDetailsAsTooltip);
+
+		String result = renderer.render(VelocityUtils.getRenderedTemplate(
+				VELOCITY_TEMPLATE, veloContext), conversionContext);
+		return result;
+	}
+
+	private StatusLightData evaluateJenkinsData(Params params,
+			JenkinsData jenkinsData) {
+		StatusLightData result = new StatusLightData();
+		if (jenkinsData.getLastCompletedBuildDetails() == null) {
+			result.setColor(StatusColor.Blue);
+		} else {
+			result.setColor(determineStatusColor(params, jenkinsData));
+			result.setLastRunTimestamp(jenkinsData
+					.getLastCompletedBuildDetails().getTimestamp());
+			result.setLastRunDurationInMillis(jenkinsData
+					.getLastCompletedBuildDetails().getDuration());
+
+			result.setTestPassCount(jenkinsData
+					.getLastCompletedBuildTestReport().getPassCount());
+			result.setTestTotalCount(jenkinsData
+					.getLastCompletedBuildTestReport().getTotalCount(
+							params.inclSkippedTests));
+
+			result.setTestDetails(computeTestDetails(jenkinsData
+					.getLastCompletedBuildTestReport()));
+		}
+		return result;
+	}
+
+	private static String computeTestDetails(TestReport testReport) {
+		String result = "";
+		if (testReport.getSuites() != null) {
+			for (TestReportSuite suite : testReport.getSuites()) {
+				if (suite.getCases() != null) {
+					for (TestReportSuiteCase aCase : suite.getCases()) {
+						if ("FAILED".equals(aCase.getStatus())) {
+							result += "(!) Test " + aCase.getClassName() + "."
+									+ aCase.getName() + " FAILED\n";
+							result += aCase.getErrorDetails();
+						}
+
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	private void populateVeloContext(Params params,
+			Map<String, Object> veloContext, JenkinsData jenkinsData,
+			StatusLightData slData) {
+
+		veloContext.put(VELO_PARAM_NAME_COLOR, slData.getColor());
+
+		if (jenkinsData.getLastCompletedBuildDetails() == null) {
+			veloContext.put(VELO_PARAM_NAME_LABEL, "-"); //$NON-NLS-1$
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.host
+					+ "/job/" //$NON-NLS-1$
+					+ params.jobName);
+			veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+		} else {
+			veloContext.put(VELO_PARAM_NAME_LABEL, params.label != null
+					&& params.label.trim().length() > 0 ? params.label
+					: jenkinsData.getJobDetails().getDisplayName());
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, jenkinsData
+					.getJobDetails().getUrl());
+
+			veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, params.showDetails);
+			Message lastRunDateFriendlyFormatted = newFriendlyDateFormatter()
+					.getFormatMessage(new Date(slData.getLastRunTimestamp()));
+			Serializable[] lastRunDateFriendlyFormattedArgs;
+			if (lastRunDateFriendlyFormatted.getArguments() == null) {
+				lastRunDateFriendlyFormattedArgs = new Serializable[0];
+			} else {
+				lastRunDateFriendlyFormattedArgs = new Serializable[lastRunDateFriendlyFormatted
+						.getArguments().length];
+				for (int i = 0; i < lastRunDateFriendlyFormattedArgs.length; i++) {
+					lastRunDateFriendlyFormattedArgs[i] = String
+							.valueOf(lastRunDateFriendlyFormatted
+									.getArguments()[i]);
+				}
+			}
+			veloContext.put(VELO_PARAM_NAME_LASTRUNWHEN, i18n.getText(
+					lastRunDateFriendlyFormatted.getKey(),
+					lastRunDateFriendlyFormattedArgs));
+			veloContext.put(VELO_PARAM_NAME_LASTRUNDURATION,
+					formatDuration(slData.getLastRunDurationInMillis()));
+
+			String testInfo = String.valueOf(slData.getTestPassCount());
+			if (slData.getTestTotalCount() == 0) {
+				testInfo += " test"; //$NON-NLS-1$
+			} else {
+				testInfo += "/" + slData.getTestTotalCount()
+						+ " tests (" //$NON-NLS-1$ //$NON-NLS-2$
+						+ newPercentFormatter().format(
+								slData.calcSuccessRatio()) + ")"; //$NON-NLS-1$
+			}
+			veloContext.put(VELO_PARAM_NAME_TESTINFO, testInfo);
+			veloContext.put(VELO_PARAM_NAME_TESTDETAILS,
+					slData.getTestDetails());
+		}
+
+		if (params.hyperlinkURL.trim().length() > 0) {
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.hyperlinkURL);
+		}
+	}
+
+	private Params extractParams(Map<String, String> parameters)
+			throws MacroExecutionException {
 		Params params = new Params();
 		params.host = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_HOST, MACRO_PARAM_DEFAULT_HOST);
@@ -88,92 +292,43 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				parameters, MACRO_PARAM_NAME_SHOWDETAILS,
 				MACRO_PARAM_DEFAULT_SHOWDETAILS));
 
-		Map<String, Object> context = MacroUtils.defaultVelocityContext();
-		try {
-			JenkinsData jenkinsData = JenkinsService.createServiceAndFetchData(
-					params.host, params.jobName);
+		params.doesReflectTest = Boolean.parseBoolean(loadDefaultedParamValue(
+				parameters, MACRO_PARAM_NAME_DOESREFLECTTEST,
+				MACRO_PARAM_DEFAULT_DOESREFLECTTEST));
+		params.simpleThresholdModel = Boolean
+				.parseBoolean(loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_SIMPLETHRESHOLDMODEL,
+						MACRO_PARAM_DEFAULT_SIMPLETHRESHOLDMODEL));
+		params.threshold1 = parseDoubleParam(
+				loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_THRESHOLD1,
+						MACRO_PARAM_DEFAULT_THRESHOLD1), 0d, 1d);
+		params.threshold2 = parseDoubleParam(
+				loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_THRESHOLD2,
+						MACRO_PARAM_DEFAULT_THRESHOLD2), 0d, params.threshold1);
 
-			if (jenkinsData.getLastCompletedBuildDetails() == null) {
-				context.put(VELO_PARAM_NAME_LABEL, "?"); //$NON-NLS-1$
-				context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-				context.put(VELO_PARAM_NAME_HYPERLINK, params.host + "/job/" //$NON-NLS-1$
-						+ params.jobName);
-				context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
-			} else {
-				context.put(VELO_PARAM_NAME_LABEL, params.label != null
-						&& params.label.trim().length() > 0 ? params.label
-						: jenkinsData.getJobDetails().getDisplayName());
-				context.put(VELO_PARAM_NAME_COLOR,
-						determineStatusColor(params, jenkinsData));
-				context.put(VELO_PARAM_NAME_HYPERLINK, jenkinsData
-						.getJobDetails().getUrl());
+		params.hyperlinkURL = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_HYPERLINKURL, MACRO_PARAM_DEFAULT_HYPERLINKURL);
+		params.hyperlinkTarget = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_HYPERLINKTARGET,
+				MACRO_PARAM_DEFAULT_HYPERLINKTARGET);
 
-				context.put(VELO_PARAM_NAME_SHOWDETAILS, params.showDetails);
-				Message lastRunDateFriendlyFormatted = newFriendlyDateFormatter()
-						.getFormatMessage(
-								new Date(jenkinsData
-										.getLastCompletedBuildDetails()
-										.getTimestamp()));
-				Serializable[] lastRunDateFriendlyFormattedArgs;
-				if (lastRunDateFriendlyFormatted.getArguments() == null) {
-					lastRunDateFriendlyFormattedArgs = new Serializable[0];
-				} else {
-					lastRunDateFriendlyFormattedArgs = new Serializable[lastRunDateFriendlyFormatted
-							.getArguments().length];
-					for (int i = 0; i < lastRunDateFriendlyFormattedArgs.length; i++) {
-						lastRunDateFriendlyFormattedArgs[i] = String
-								.valueOf(lastRunDateFriendlyFormatted
-										.getArguments()[i]);
-					}
-				}
-				context.put(VELO_PARAM_NAME_LASTRUNWHEN, i18n.getText(
-						lastRunDateFriendlyFormatted.getKey(),
-						lastRunDateFriendlyFormattedArgs));
-				context.put(VELO_PARAM_NAME_LASTRUNDURATION,
-						formatDuration(jenkinsData
-								.getLastCompletedBuildDetails().getDuration()));
+		params.inclSkippedTests = Boolean.parseBoolean(loadDefaultedParamValue(
+				parameters, MACRO_PARAM_NAME_INCLSKIPPEDTESTS,
+				MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS));
 
-				int testFailCount = jenkinsData
-						.getLastCompletedBuildTestReport().getFailCount();
-				int testPassCount = jenkinsData
-						.getLastCompletedBuildTestReport().getPassCount();
-				;
-				int testTotalCount = jenkinsData
-						.getLastCompletedBuildTestReport().getTotalCount();
-				// Because all Jenkins test reports do not provide always with the same data, sometimes failCount+passCount, sometimes failCount+totalCount
-				if (testTotalCount == 0) {
-					testTotalCount = testFailCount + testPassCount;
-				} else {
-					testPassCount = testTotalCount - testFailCount;
-				}
-				String testInfo = String.valueOf(testPassCount);
-				if (testTotalCount == 0) {
-					testInfo += " test"; //$NON-NLS-1$
-				} else {
-					double ratio = ((double) testPassCount)
-							/ ((double) testTotalCount);
-					testInfo += "/" + testTotalCount + " tests (" //$NON-NLS-1$ //$NON-NLS-2$
-							+ newPercentFormatter().format(ratio) + ")"; //$NON-NLS-1$
-				}
-				context.put(VELO_PARAM_NAME_TESTINFO, testInfo);
-			}
-		} catch (ResourceNotFoundException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Job not found !"); //$NON-NLS-1$
-			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-			context.put(VELO_PARAM_NAME_HYPERLINK, params.host + "/job/" //$NON-NLS-1$
-					+ params.jobName);
-			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
-		} catch (ServiceUnavailableException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Service unavailable !"); //$NON-NLS-1$
-			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-			context.put(VELO_PARAM_NAME_HYPERLINK, params.host);
-			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
-		}
+		params.applyOutlineStyle = Boolean
+				.parseBoolean(loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_APPLYOUTLINESTYLE,
+						MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE));
 
-		String result = renderer.render(
-				VelocityUtils.getRenderedTemplate(VELOCITY_TEMPLATE, context),
-				conversionContext);
-		return result;
+		params.showFailedTestDetailsAsTooltip = Boolean
+				.parseBoolean(loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP,
+						MACRO_PARAM_DEFAULT_SHOWFAILEDTESTDETAILSASTOOLTIP));
+
+		return params;
 	}
 
 	@Override
@@ -243,31 +398,53 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 		if (params.period > 0 && howOld > (params.period * 3600 * 1000)) {
 			return StatusColor.Grey;
 		} else {
-			switch (jenkinsData.getLastCompletedBuildDetails().getResult()) {
-			case FAILURE:
-				return StatusColor.Red;
-			case SUCCESS:
-				return StatusColor.Green;
-			case UNSTABLE:
-				return StatusColor.Yellow;
-			case ABORTED:
-			case BUILDING:
-			case REBUILDING:
-			case UNKNOWN:
-			default:
-				return StatusColor.Grey;
+			if (params.doesReflectTest) {
+				double successRatio = jenkinsData
+						.getLastCompletedBuildTestReport().calcSuccessRatio(
+								params.inclSkippedTests);
+				if (params.simpleThresholdModel) {
+					if (successRatio == 1d) {
+						return StatusColor.Green;
+					} else if (successRatio == 0d) {
+						return StatusColor.Red;
+					} else {
+						return StatusColor.Yellow;
+					}
+				} else {
+					if (successRatio >= params.threshold1) {
+						return StatusColor.Green;
+					} else if (successRatio >= params.threshold2) {
+						return StatusColor.Yellow;
+					} else {
+						return StatusColor.Red;
+					}
+				}
+			} else {
+				switch (jenkinsData.getLastCompletedBuildDetails().getResult()) {
+				case FAILURE:
+					return StatusColor.Red;
+				case SUCCESS:
+					return StatusColor.Green;
+				case UNSTABLE:
+					return StatusColor.Yellow;
+				case ABORTED:
+				case BUILDING:
+				case REBUILDING:
+				case UNKNOWN:
+				default:
+					return StatusColor.Grey;
+				}
 			}
 		}
 	}
 
 	private static class Params {
-		String host, jobName, label;
+		String host, jobName, label, hyperlinkURL, hyperlinkTarget;
 		double period;
-		boolean showDetails;
-	}
-
-	private static enum StatusColor {
-		Grey, Red, Yellow, Green
+		boolean showDetails, doesReflectTest, simpleThresholdModel,
+				inclSkippedTests, applyOutlineStyle,
+				showFailedTestDetailsAsTooltip;
+		double threshold1, threshold2;
 	}
 
 }

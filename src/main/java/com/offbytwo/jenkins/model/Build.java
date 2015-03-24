@@ -7,8 +7,13 @@
 package com.offbytwo.jenkins.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.http.client.HttpResponseException;
+
+import com.offbytwo.jenkins.client.JenkinsHttpClient;
 
 public class Build extends BaseModel {
 
@@ -39,16 +44,39 @@ public class Build extends BaseModel {
 		return client.get(url, BuildWithDetails.class);
 	}
 
-	public BuildWithTestReport testReport() throws IOException {
-		BuildWithTestReport result = null;
+	public TestReport testReport(boolean recursiveChildLoading)
+			throws IOException {
+		return testReport(client, url, recursiveChildLoading);
+	}
+
+	public static TestReport testReport(JenkinsHttpClient client, String url,
+			boolean recursiveChildLoading) throws IOException {
+		TestReport result = null;
 		try {
-			result = client.get(url + "/testReport", BuildWithTestReport.class);
+			result = client.get(url + "/testReport", TestReport.class);
+			result.setMissingValues();
+
+			if (recursiveChildLoading && result.getChildReports() != null) {
+				List<TestReportSuite> suites = new ArrayList<TestReportSuite>();
+				if (result.getSuites() != null) {
+					suites.addAll(Arrays.asList(result.getSuites()));
+				}
+				for (TestReportChildReport report : result.getChildReports()) {
+					TestReport testReport = testReport(client, report
+							.getChild().getUrl(), recursiveChildLoading);
+					suites.addAll(Arrays.asList(testReport.getSuites()));
+				}
+				TestReportSuite[] resultSuites = new TestReportSuite[suites
+						.size()];
+				result.setSuites(suites.toArray(resultSuites));
+			}
 		} catch (HttpResponseException e) {
-			//			if (e.getStatusCode() == 404) {
-			result = new BuildWithTestReport();
-			//			}
+			// if (e.getStatusCode() == 404) {
+			result = new TestReport();
+			// }
 		}
 		result.setClient(client);
 		return result;
 	}
+
 }

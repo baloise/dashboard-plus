@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
-import org.sonar.wsclient.services.Measure;
-
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.content.render.xhtml.Renderer;
 import com.atlassian.confluence.core.DateFormatter;
@@ -32,17 +30,24 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_HOST = "host"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_RESOURCEID = "resourceId"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_LABEL = "label"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_SIMPLETHRESHOLDMODEL = "simpleThresholdModel"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_THRESHOLD1 = "threshold1"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_THRESHOLD2 = "threshold2"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_PERIOD = "period"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_SHOWDETAILS = "showDetails"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_HYPERLINKURL = "hyperlinkURL"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_INCLSKIPPEDTESTS = "inclSkippedTests"; //$NON-NLS-1$
+	private static final String MACRO_PARAM_NAME_HYPERLINKTARGET = "hyperlinkTarget";
+	private static final String MACRO_PARAM_NAME_APPLYOUTLINESTYLE = "applyOutlineStyle";
 
 	private static final String MACRO_PARAM_DEFAULT_HOST = Default
 			.getString("SonarTestStatusMacro.host"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_RESOURCEID = Default
-			.getString("SonarTestStatusMacro.projectId"); //$NON-NLS-1$
+			.getString("SonarTestStatusMacro.resourceId"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_LABEL = Default
 			.getString("SonarTestStatusMacro.label"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_SIMPLETHRESHOLDMODEL = Default
+			.getString("SonarTestStatusMacro.simpleThresholdModel"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = Default
 			.getString("SonarTestStatusMacro.threshold1"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = Default
@@ -51,6 +56,14 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 			.getString("SonarTestStatusMacro.period"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = Default
 			.getString("SonarTestStatusMacro.showDetails"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = Default
+			.getString("SonarTestStatusMacro.hyperlinkURL"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS = Default
+			.getString("SonarTestStatusMacro.inclSkippedTests"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = Default
+			.getString("SonarTestStatusMacro.hyperlinkTarget"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = Default
+			.getString("SonarTestStatusMacro.applyOutlineStyle"); //$NON-NLS-1$
 
 	/* Automatically injected spring components */
 	// private final XhtmlContent xhtmlUtils;
@@ -79,95 +92,177 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	@Override
 	public String execute(Map<String, String> parameters, String bodyContent,
 			ConversionContext conversionContext) throws MacroExecutionException {
+		Params params = extractParams(parameters);
+
+		Map<String, Object> veloContext = MacroUtils.defaultVelocityContext();
+		try {
+			String[] splitMax = params.resourceId.split(" \\[=\\] ");
+			String[] splitAdd = params.resourceId.split(" \\[\\+\\] ");
+
+			if (splitAdd.length > 1 && splitMax.length > 1) {
+				throw new MacroExecutionException(
+						"Use either ' [=] ' or ' [+] ' as job separator for an aggregation, not both");
+			}
+
+			String[] split = splitMax;
+			if (splitAdd.length > splitMax.length) {
+				split = splitAdd;
+			}
+
+			SonarData primarySonarData = SonarService
+					.createServiceAndFetchData(params.host, split[0]);
+			StatusLightData primarySLData = evaluateSonarData(params,
+					primarySonarData);
+
+			for (int i = 1; i < split.length; i++) {
+				try {
+					SonarData secondarySonarData = SonarService
+							.createServiceAndFetchData(params.host, split[i]);
+					StatusLightData secondarySLData = evaluateSonarData(params,
+							secondarySonarData);
+					primarySLData.aggregateWith(secondarySLData,
+							split == splitAdd);
+					continue;
+				} catch (ResourceNotFoundException e) {
+				} catch (ServiceUnavailableException e) {
+				}
+				StatusLightData slDataOnException = new StatusLightData();
+				slDataOnException.setColor(StatusColor.Grey);
+				primarySLData.aggregateWith(slDataOnException,
+						split == splitAdd);
+			}
+
+			populateVeloContext(params, veloContext, primarySonarData,
+					primarySLData);
+
+		} catch (ResourceNotFoundException e) {
+			veloContext.put(VELO_PARAM_NAME_LABEL, "?"); //$NON-NLS-1$
+			veloContext.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.host
+					+ "/dashboard/index/" + params.resourceId); //$NON-NLS-1$
+			veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+		} catch (ServiceUnavailableException e) {
+			veloContext.put(VELO_PARAM_NAME_LABEL, "!"); //$NON-NLS-1$
+			veloContext.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.host);
+			veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+		}
+		veloContext.put(VELO_PARAM_NAME_HYPERLINK_TARGET,
+				params.hyperlinkTarget);
+		veloContext
+				.put(VELO_PARAM_NAME_APPLY_OUTLINE, params.applyOutlineStyle);
+		veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP, false);
+
+		String result = renderer.render(VelocityUtils.getRenderedTemplate(
+				VELOCITY_TEMPLATE, veloContext), conversionContext);
+		return result;
+	}
+
+	private StatusLightData evaluateSonarData(Params params, SonarData sonarData) {
+		StatusLightData result = new StatusLightData();
+		result.setColor(determineStatusColor(params, sonarData));
+		result.setLastRunDurationInMillis(sonarData.getLastRunDuration());
+		result.setLastRunTimestamp(sonarData.getLastRunDate().getTime());
+
+		result.setTestPassCount(sonarData
+				.getTestSuccessCount(params.inclSkippedTests));
+		result.setTestTotalCount(sonarData
+				.getTestCount(params.inclSkippedTests));
+		return result;
+	}
+
+	private void populateVeloContext(Params params,
+			Map<String, Object> veloContext, SonarData sonarData,
+			StatusLightData slData) {
+		veloContext.put(VELO_PARAM_NAME_LABEL, params.label != null
+				&& params.label.trim().length() > 0 ? params.label : sonarData
+				.getResource().getName());
+		veloContext.put(VELO_PARAM_NAME_COLOR, slData.getColor());
+		if (params.hyperlinkURL.trim().length() > 0) {
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.hyperlinkURL);
+		} else {
+			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.host
+					+ "/dashboard/index/" + sonarData.getResource().getId()); //$NON-NLS-1$
+		}
+		veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, params.showDetails);
+		Message lastRunDateFriendlyFormatted = newFriendlyDateFormatter()
+				.getFormatMessage(new Date(slData.getLastRunTimestamp()));
+		Serializable[] lastRunDateFriendlyFormattedArgs;
+		if (lastRunDateFriendlyFormatted.getArguments() == null) {
+			lastRunDateFriendlyFormattedArgs = new Serializable[0];
+		} else {
+			lastRunDateFriendlyFormattedArgs = new Serializable[lastRunDateFriendlyFormatted
+					.getArguments().length];
+			for (int i = 0; i < lastRunDateFriendlyFormattedArgs.length; i++) {
+				lastRunDateFriendlyFormattedArgs[i] = String
+						.valueOf(lastRunDateFriendlyFormatted.getArguments()[i]);
+			}
+		}
+		veloContext.put(VELO_PARAM_NAME_LASTRUNWHEN, i18n.getText(
+				lastRunDateFriendlyFormatted.getKey(),
+				lastRunDateFriendlyFormattedArgs));
+		veloContext.put(VELO_PARAM_NAME_LASTRUNDURATION,
+				formatDuration(slData.getLastRunDurationInMillis()));
+
+		String testInfo = String.valueOf(slData.getTestPassCount());
+		if (slData.getTestTotalCount() == 0) {
+			testInfo += " test"; //$NON-NLS-1$
+		} else {
+			testInfo += "/" //$NON-NLS-1$
+					+ slData.getTestTotalCount()
+					+ " tests (" //$NON-NLS-1$
+					+ newPercentFormatter().format(slData.calcSuccessRatio())
+					+ ")"; //$NON-NLS-1$
+		}
+		veloContext.put(VELO_PARAM_NAME_TESTINFO, testInfo);
+	}
+
+	private Params extractParams(Map<String, String> parameters)
+			throws MacroExecutionException {
 		Params params = new Params();
-		params.host = loadParamValue(parameters, MACRO_PARAM_NAME_HOST,
-				MACRO_PARAM_DEFAULT_HOST);
-		params.resourceId = loadParamValue(parameters,
+		params.host = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_HOST, MACRO_PARAM_DEFAULT_HOST);
+		params.resourceId = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_RESOURCEID, MACRO_PARAM_DEFAULT_RESOURCEID);
 
-		params.label = loadParamValue(parameters, MACRO_PARAM_NAME_LABEL,
-				MACRO_PARAM_DEFAULT_LABEL);
+		params.label = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_LABEL, MACRO_PARAM_DEFAULT_LABEL);
+		params.simpleThresholdModel = Boolean
+				.parseBoolean(loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_SIMPLETHRESHOLDMODEL,
+						MACRO_PARAM_DEFAULT_SIMPLETHRESHOLDMODEL));
 		params.threshold1 = parseDoubleParam(
-				loadParamValue(parameters, MACRO_PARAM_NAME_THRESHOLD1,
+				loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_THRESHOLD1,
 						MACRO_PARAM_DEFAULT_THRESHOLD1), 0d, 1d);
 		params.threshold2 = parseDoubleParam(
-				loadParamValue(parameters, MACRO_PARAM_NAME_THRESHOLD2,
+				loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_THRESHOLD2,
 						MACRO_PARAM_DEFAULT_THRESHOLD2), 0d, params.threshold1);
 		params.period = parseDoubleParam(
-				loadParamValue(parameters, MACRO_PARAM_NAME_PERIOD,
+				loadDefaultedParamValue(parameters, MACRO_PARAM_NAME_PERIOD,
 						MACRO_PARAM_DEFAULT_PERIOD), -Double.MAX_VALUE,
 				Double.MAX_VALUE);
 
-		params.showDetails = Boolean.parseBoolean(loadParamValue(parameters,
-				MACRO_PARAM_NAME_SHOWDETAILS, MACRO_PARAM_DEFAULT_SHOWDETAILS));
+		params.showDetails = Boolean.parseBoolean(loadDefaultedParamValue(
+				parameters, MACRO_PARAM_NAME_SHOWDETAILS,
+				MACRO_PARAM_DEFAULT_SHOWDETAILS));
 
-		Map<String, Object> context = MacroUtils.defaultVelocityContext();
-		try {
-			SonarData sonarData = SonarService.createServiceAndFetchData(
-					params.host, params.resourceId);
+		params.hyperlinkURL = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_HYPERLINKURL, MACRO_PARAM_DEFAULT_HYPERLINKURL);
+		params.hyperlinkTarget = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_HYPERLINKTARGET,
+				MACRO_PARAM_DEFAULT_HYPERLINKTARGET);
 
-			context.put(VELO_PARAM_NAME_LABEL, params.label != null
-					&& params.label.trim().length() > 0 ? params.label
-					: sonarData.getResource().getName());
-			context.put(VELO_PARAM_NAME_COLOR,
-					determineStatusColor(params, sonarData));
-			context.put(VELO_PARAM_NAME_HYPERLINK, params.host
-					+ "/dashboard/index/" + sonarData.getResource().getId()); //$NON-NLS-1$
+		params.inclSkippedTests = Boolean.parseBoolean(loadDefaultedParamValue(
+				parameters, MACRO_PARAM_NAME_INCLSKIPPEDTESTS,
+				MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS));
 
-			context.put(VELO_PARAM_NAME_SHOWDETAILS, params.showDetails);
-			Message lastRunDateFriendlyFormatted = newFriendlyDateFormatter()
-					.getFormatMessage(sonarData.getLastRunDate());
-			Serializable[] lastRunDateFriendlyFormattedArgs;
-			if (lastRunDateFriendlyFormatted.getArguments() == null) {
-				lastRunDateFriendlyFormattedArgs = new Serializable[0];
-			} else {
-				lastRunDateFriendlyFormattedArgs = new Serializable[lastRunDateFriendlyFormatted
-						.getArguments().length];
-				for (int i = 0; i < lastRunDateFriendlyFormattedArgs.length; i++) {
-					lastRunDateFriendlyFormattedArgs[i] = String
-							.valueOf(lastRunDateFriendlyFormatted
-									.getArguments()[i]);
-				}
-			}
-			context.put(VELO_PARAM_NAME_LASTRUNWHEN, i18n.getText(
-					lastRunDateFriendlyFormatted.getKey(),
-					lastRunDateFriendlyFormattedArgs));
-
-			context.put(VELO_PARAM_NAME_LASTRUNDURATION,
-					formatDuration(sonarData.getLastRunDuration()));
-
-			String testInfo;
-			if (sonarData.getTestCount() == 0) {
-				testInfo = "0 test"; //$NON-NLS-1$
-			} else {
-				testInfo = sonarData.getTestSuccessCount() + "/" //$NON-NLS-1$
-						+ sonarData.getTestCount() + " tests"; //$NON-NLS-1$
-			}
-			Measure testSuccessDensity = sonarData.getTestSuccessDensity();
-			if (testSuccessDensity != null) {
-				testInfo += " (" //$NON-NLS-1$
-						+ newPercentFormatter()
-								.format(testSuccessDensity.getValue()
-										.doubleValue() / 100d) + ")"; //$NON-NLS-1$
-			}
-			context.put(VELO_PARAM_NAME_TESTINFO, testInfo);
-		} catch (ResourceNotFoundException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Project not found !"); //$NON-NLS-1$
-			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-			context.put(VELO_PARAM_NAME_HYPERLINK, params.host
-					+ "/dashboard/index/" + params.resourceId); //$NON-NLS-1$
-			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
-		} catch (ServiceUnavailableException e) {
-			context.put(VELO_PARAM_NAME_LABEL, "Service unavailable !"); //$NON-NLS-1$
-			context.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
-			context.put(VELO_PARAM_NAME_HYPERLINK, params.host);
-			context.put(VELO_PARAM_NAME_SHOWDETAILS, false);
-		}
-
-		String result = renderer.render(
-				VelocityUtils.getRenderedTemplate(VELOCITY_TEMPLATE, context),
-				conversionContext);
-		return result;
+		params.applyOutlineStyle = Boolean
+				.parseBoolean(loadDefaultedParamValue(parameters,
+						MACRO_PARAM_NAME_APPLYOUTLINESTYLE,
+						MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE));
+		return params;
 	}
 
 	@Override
@@ -221,7 +316,7 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 		return friendlyDateFormatter;
 	}
 
-	private String loadParamValue(Map<String, String> parameters,
+	private String loadDefaultedParamValue(Map<String, String> parameters,
 			String paramName, String defaultParamValue) {
 		String result = parameters.get(paramName);
 		if (result == null)
@@ -233,24 +328,38 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	private StatusColor determineStatusColor(Params params, SonarData sonarData) {
 		long howOld = System.currentTimeMillis()
 				- sonarData.getLastRunDate().getTime();
-		Measure testSuccessDensity = sonarData.getTestSuccessDensity();
+		double testSuccessRate = sonarData
+				.getTestSuccessRate(params.inclSkippedTests);
 		if (params.period > 0 && howOld > (params.period * 3600 * 1000)) {
 			return StatusColor.Grey;
-		} else if (testSuccessDensity == null) {
+		} else if (testSuccessRate < 0d) {
 			return StatusColor.Grey;
-		} else if (testSuccessDensity.getValue().doubleValue() >= params.threshold1 * 100) {
-			return StatusColor.Green;
-		} else if (testSuccessDensity.getValue().doubleValue() >= params.threshold2 * 100) {
-			return StatusColor.Yellow;
 		} else {
-			return StatusColor.Red;
+			if (params.simpleThresholdModel) {
+				if (testSuccessRate == 1d) {
+					return StatusColor.Green;
+				} else if (testSuccessRate == 0d) {
+					return StatusColor.Red;
+				} else {
+					return StatusColor.Yellow;
+				}
+			} else {
+				if (testSuccessRate >= params.threshold1) {
+					return StatusColor.Green;
+				} else if (testSuccessRate >= params.threshold2) {
+					return StatusColor.Yellow;
+				} else {
+					return StatusColor.Red;
+				}
+			}
 		}
 	}
 
 	private static class Params {
-		String host, resourceId, label;
+		String host, resourceId, label, hyperlinkURL, hyperlinkTarget;
 		double threshold1, threshold2, period;
-		boolean showDetails;
+		boolean showDetails, simpleThresholdModel, inclSkippedTests,
+				applyOutlineStyle;
 	}
 
 }

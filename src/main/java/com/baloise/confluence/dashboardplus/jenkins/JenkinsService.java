@@ -14,14 +14,16 @@ import com.offbytwo.jenkins.model.JobWithDetails;
 public class JenkinsService implements IJenkinsService {
 
 	public static JenkinsData createServiceAndFetchData(String host,
-			String jobName) throws ServiceUnavailableException,
-			ResourceNotFoundException {
-		return new JenkinsService().fetchData(host, jobName);
+			String jobName, boolean recursiveChildLoading)
+			throws ServiceUnavailableException, ResourceNotFoundException {
+		return new JenkinsService().fetchData(host, jobName,
+				recursiveChildLoading);
 	}
 
 	@Override
-	public JenkinsData fetchData(String host, String jobName)
-			throws ServiceUnavailableException, ResourceNotFoundException {
+	public JenkinsData fetchData(String host, String jobName,
+			boolean recursiveChildLoading) throws ServiceUnavailableException,
+			ResourceNotFoundException {
 		JenkinsData result;
 		try {
 			JenkinsServer jenkins = new JenkinsServer(new URI(host));
@@ -43,7 +45,8 @@ public class JenkinsService implements IJenkinsService {
 			if (lastCompletedBuild != null) {
 				result.setLastCompletedBuildDetails(lastCompletedBuild
 						.details());
-				result.setLastCompletedBuildTestReport(lastCompletedBuild.testReport());
+				result.setLastCompletedBuildTestReport(lastCompletedBuild
+						.testReport(recursiveChildLoading));
 			}
 
 		} catch (IOException e) {

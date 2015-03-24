@@ -1,21 +1,32 @@
 #requireResource("com.baloise.confluence.dashboard-plus:dashboard-plus-resources")
-<div class="statuslight">
-	<a style="color: black; text-decoration: none;" href="${hyperlink}" target="_blank" title="Drilldown">
-##	<span class="clickable" href="${hyperlink}" title="Drilldown"> 
-		  <span style="font-size: x-small; white-space: nowrap;">
-		      #if ( ${showDetails} )
-				  	${lastRunWhen} [${lastRunDuration}]
-		      #end
-		      <br/>
-		  </span>
-	      <ac:macro ac:name="status">
-	        <ac:parameter ac:name="colour">${color}</ac:parameter>
-	        <ac:parameter ac:name="title">${label}</ac:parameter>
-	      </ac:macro>
-		  <br/>
+<div class="dplus-text">
+	<a style="text-decoration: none; color: black;" href="${hyperlinkURL}" target="${hyperlinkTarget}"
+		#if ( ! ${showDetails} || ${showFailedTestDetailsAsTooltip} )
+title="
+			#if ( ! ${showDetails} )
+${lastRunWhen} [${lastRunDuration}]
+${testInfo}
+
+			#end
+			#if ( ${showFailedTestDetailsAsTooltip} )
+${testDetails}
+			#end
+"
+		#end
+>
+	## CSS style required here because it seems CSS class has no precendence over the Confluence CSS class applied on external link!
 	      #if ( ${showDetails} )
-			  <span style="font-size: x-small; white-space: nowrap;">${testInfo}</span>
+			  <span class="dplus-text">
+			      ${lastRunWhen} [${lastRunDuration}]
+			      <br/>
+			  </span>
 	      #end
-##	</span>
+	      <span class="dplus dplus-light ${color.getCSSClass($applyOutline)}">${label}</span>
+	      #if ( ${showDetails} )
+			  <span class="dplus-text">
+				  <br/>
+				  ${testInfo}
+			  </span>
+	      #end
 	</a>
 </div>

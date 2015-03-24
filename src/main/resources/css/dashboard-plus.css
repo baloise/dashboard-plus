@@ -1,5 +1,98 @@
-.statuslight {
+div.dplus-text {
 	text-align: center;
 	text-decoration: none;
 	color: black;
+	display: inline-block;
+}
+
+span.dplus-text {
+	font-size: x-small;
+	white-space: nowrap;
+}
+
+.dplus {
+	min-width: 76px;
+	padding: 2px 5px 1px 5px
+}
+
+.dplus-light {
+	background: #ccc;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	color: #000;
+	display: inline-block;
+	font-size: 18px;
+	font-weight: bold;
+	line-height: 99%;
+	margin: 0;
+	padding: 2px 5px;
+	text-align: center;
+	text-decoration: none;
+	/*	text-transform: uppercase; */
+}
+
+.dplus-light.dplus-light-subtle {
+	background-color: #fff;
+	border-color: #ccc;
+	color: #aaa;
+}
+
+.dplus-light-green {
+	background-color: #14892c;
+	border-color: #14892c;
+	color: #fff;
+}
+
+.dplus-light-green.dplus-light-subtle {
+	background-color: #fff;
+	border-color: #b2d8b9;
+	color: #14892c;
+}
+
+.dplus-light-red {
+	background-color: #d04437;
+	border-color: #d04437;
+	color: #fff;
+}
+
+.dplus-light-red.dplus-light-subtle {
+	background-color: #fff;
+	border-color: #f8d3d1;
+	color: #d04437;
+}
+
+.dplus-light-yellow {
+	background-color: #ffd351;
+	border-color: #ffd351;
+	color: #594300;
+}
+
+.dplus-light-yellow.dplus-light-subtle {
+	background-color: #fff;
+	border-color: #ffe28c;
+	color: #ff9900;
+}
+
+.dplus-light-blue {
+	background-color: #4a6785;
+	border-color: #4a6785;
+	color: #fff;
+}
+
+.dplus-light-blue.dplus-light-subtle {
+	background-color: #fff;
+	border-color: #e4e8ed;
+	color: #4a6785;
+}
+
+.dplus-light-brown {
+	background-color: #815b3a;
+	border-color: #815b3a;
+	color: #fff;
+}
+
+.dplus-light-brown.dplus-light-subtle {
+	background-color: #fff;
+	border-color: #ece7e2;
+	color: #815b3a;
 }

@@ -1,8 +1,8 @@
 package com.baloise.confluence.dashboardplus.jenkins.bean;
 
 import com.offbytwo.jenkins.model.BuildWithDetails;
-import com.offbytwo.jenkins.model.BuildWithTestReport;
 import com.offbytwo.jenkins.model.JobWithDetails;
+import com.offbytwo.jenkins.model.TestReport;
 
 public class JenkinsData {
 
@@ -10,7 +10,7 @@ public class JenkinsData {
 
 	private BuildWithDetails lastCompletedBuildDetails;
 
-	private BuildWithTestReport lastCompletedBuildTestReport;
+	private TestReport lastCompletedBuildTestReport;
 
 	public JobWithDetails getJobDetails() {
 		return jobDetails;
@@ -29,12 +29,12 @@ public class JenkinsData {
 		this.lastCompletedBuildDetails = lastCompletedBuildDetails;
 	}
 
-	public BuildWithTestReport getLastCompletedBuildTestReport() {
+	public TestReport getLastCompletedBuildTestReport() {
 		return lastCompletedBuildTestReport;
 	}
 
 	public void setLastCompletedBuildTestReport(
-			BuildWithTestReport lastCompletedBuildTestReport) {
+			TestReport lastCompletedBuildTestReport) {
 		this.lastCompletedBuildTestReport = lastCompletedBuildTestReport;
 	}
 

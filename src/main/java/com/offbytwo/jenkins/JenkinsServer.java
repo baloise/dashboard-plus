@@ -6,26 +6,14 @@
 
 package com.offbytwo.jenkins;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
-import com.offbytwo.jenkins.client.JenkinsHttpClient;
-import com.offbytwo.jenkins.model.Computer;
-import com.offbytwo.jenkins.model.Job;
-import com.offbytwo.jenkins.model.JobConfiguration;
-import com.offbytwo.jenkins.model.JobWithDetails;
-import com.offbytwo.jenkins.model.LabelWithDetails;
-import com.offbytwo.jenkins.model.MainView;
-import com.offbytwo.jenkins.model.MavenJobWithDetails;
-import com.offbytwo.jenkins.model.View;
-import org.apache.http.client.HttpResponseException;
-import org.dom4j.DocumentException;
-
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
+
+import org.apache.http.client.HttpResponseException;
+
+import com.offbytwo.jenkins.client.JenkinsHttpClient;
+import com.offbytwo.jenkins.model.JobWithDetails;
+import com.offbytwo.jenkins.model.MavenJobWithDetails;
 
 /**
  * The main starting point for interacting with a Jenkins server.
@@ -106,9 +94,9 @@ public class JenkinsServer {
 			throw e;
 		}
 	}
-
-	private String encode(String pathPart) {
-		// jenkins doesn't like the + for space, use %20 instead
-		return URLEncoder.encode(pathPart).replaceAll("\\+", "%20");
-	}
+	/*
+	 * private String encode(String pathPart) { // jenkins doesn't like the +
+	 * for space, use %20 instead return
+	 * URLEncoder.encode(pathPart).replaceAll("\\+", "%20"); }
+	 */
 }
