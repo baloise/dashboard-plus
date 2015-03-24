@@ -2,7 +2,7 @@ div.dplus-text {
 	text-align: center;
 	text-decoration: none;
 	color: black;
-	display: inline-block;
+	/* display: inline-block; */
 }
 
 span.dplus-text {

@@ -1,8 +1,9 @@
 #requireResource("com.baloise.confluence.dashboard-plus:dashboard-plus-resources")
 <div class="dplus-text">
+	#if ( ${hyperlinkURL} != "" )
 	<a style="text-decoration: none; color: black;" href="${hyperlinkURL}" target="${hyperlinkTarget}"
 		#if ( ! ${showDetails} || ${showFailedTestDetailsAsTooltip} )
-title="#if ( ! ${showDetails} )
+title="#if ( ! ${showDetails} && ${lastRunWhen} && ${lastRunDuration} && ${testInfo} )
 ${lastRunWhen} [${lastRunDuration}]
 ${testInfo}
 
@@ -12,7 +13,8 @@ ${testDetails}
 #end
 "
 		#end
->
+	>
+	#end
 	## CSS style required here because it seems CSS class has no precendence over the Confluence CSS class applied on external link!
 	      #if ( ${showDetails} )
 			  <span class="dplus-text">
@@ -27,5 +29,7 @@ ${testDetails}
 				  ${testInfo}
 			  </span>
 	      #end
+	#if ( ${hyperlinkURL} != "" )
 	</a>
+	#end
 </div>

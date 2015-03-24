@@ -6,20 +6,14 @@ import java.util.Map;
 
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.content.render.xhtml.Renderer;
-import com.atlassian.confluence.core.DateFormatter;
 import com.atlassian.confluence.core.FormatSettingsManager;
-import com.atlassian.confluence.core.TimeZone;
-import com.atlassian.confluence.core.datetime.FriendlyDateFormatter;
 import com.atlassian.confluence.languages.LocaleManager;
 import com.atlassian.confluence.macro.MacroExecutionException;
 import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
-import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
-import com.atlassian.confluence.user.ConfluenceUserPreferences;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.i18n.Message;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
-import com.atlassian.user.User;
 import com.baloise.confluence.dashboardplus.exception.ResourceNotFoundException;
 import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableException;
 import com.baloise.confluence.dashboardplus.sonar.SonarService;
@@ -65,28 +59,13 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = Default
 			.getString("SonarTestStatusMacro.applyOutlineStyle"); //$NON-NLS-1$
 
-	/* Automatically injected spring components */
-	// private final XhtmlContent xhtmlUtils;
-	// private ApplicationLinkService applicationLinkService;
-	private final Renderer renderer;
-	private final UserAccessor userAccessor;
-	private final FormatSettingsManager formatSettingsManager;
-	private final LocaleManager localeManager;
-	private final I18nResolver i18n;
-
 	public SonarTestStatusMacro(/* XhtmlContent xhtmlUtils, */
 	/* ApplicationLinkService applicationLinkService, */Renderer renderer,
 			UserAccessor userAccessor,
 			FormatSettingsManager formatSettingsManager,
 			LocaleManager localeManager, I18nResolver i18n) {
-		super();
-		//this.xhtmlUtils = xhtmlUtils;
-		// this.applicationLinkService = applicationLinkService;
-		this.renderer = renderer;
-		this.userAccessor = userAccessor;
-		this.formatSettingsManager = formatSettingsManager;
-		this.localeManager = localeManager;
-		this.i18n = i18n;
+		super(renderer, userAccessor, formatSettingsManager, localeManager,
+				i18n);
 	}
 
 	@Override
@@ -263,66 +242,6 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 						MACRO_PARAM_NAME_APPLYOUTLINESTYLE,
 						MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE));
 		return params;
-	}
-
-	@Override
-	public BodyType getBodyType() {
-		return BodyType.NONE;
-	}
-
-	@Override
-	public OutputType getOutputType() {
-		return OutputType.BLOCK;
-	}
-
-	private double parseDoubleParam(String paramValue, double minExcl,
-			double maxIncl) throws MacroExecutionException {
-		double result;
-		try {
-			result = Double.parseDouble(paramValue);
-		} catch (NumberFormatException e) {
-			throw new MacroExecutionException("Wrong format: the parameter '" //$NON-NLS-1$
-					+ paramValue + "' is not a decimal value"); //$NON-NLS-1$
-		}
-
-		if (result <= minExcl || result > maxIncl) {
-			throw new MacroExecutionException("Wrong value: the parameter '" //$NON-NLS-1$
-					+ paramValue + "' is out of the expected range " + minExcl //$NON-NLS-1$
-					+ "-" + maxIncl); //$NON-NLS-1$
-		}
-
-		return result;
-	}
-
-	private FriendlyDateFormatter newFriendlyDateFormatter() {
-		// Get current user's timezone, or default one
-		User authUser = AuthenticatedUserThreadLocal.getUser();
-		TimeZone timeZone;
-		if (authUser == null) {
-			// anonymous
-			timeZone = TimeZone.getDefault();
-		} else {
-			ConfluenceUserPreferences prefs = userAccessor
-					.getConfluenceUserPreferences(authUser);
-			timeZone = prefs.getTimeZone();
-		}
-		// Build date formatter
-		DateFormatter dateFormatter = new DateFormatter(timeZone,
-				formatSettingsManager, localeManager);
-
-		// Build "friendly" date formatter
-		FriendlyDateFormatter friendlyDateFormatter = new FriendlyDateFormatter(
-				new Date(), dateFormatter);
-		return friendlyDateFormatter;
-	}
-
-	private String loadDefaultedParamValue(Map<String, String> parameters,
-			String paramName, String defaultParamValue) {
-		String result = parameters.get(paramName);
-		if (result == null)
-			return defaultParamValue;
-		else
-			return parameters.get(paramName);
 	}
 
 	private StatusColor determineStatusColor(Params params, SonarData sonarData) {

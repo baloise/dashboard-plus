@@ -58,6 +58,25 @@
 			<parameter name="showFailedTestDetailsAsTooltip" type="boolean" default="true"/>
 		</parameters>
 	</xhtml-macro>
+	<xhtml-macro name="static-status-light" class="com.baloise.confluence.dashboardplus.StaticStatusLightMacro"
+		key="static-status-light"
+		icon="/download/resources/${project.groupId}.${project.artifactId}/images/staticStatusLightIcon.png">
+		<category name="visuals" />
+		<parameters>
+			<parameter name="color" type="enum" required="true" default="Blue">
+				<value name="Blue"/>
+				<value name="Green"/>
+				<value name="Yellow"/>
+				<value name="Red"/>
+				<value name="Grey"/>
+				<value name="Brown"/>
+			</parameter>
+			<parameter name="label" type="string"/>
+			<parameter name="hyperlinkURL" type="string"/>
+			<parameter name="hyperlinkTarget" type="string" default="_blank"/>
+			<parameter name="applyOutlineStyle" type="boolean" default="false"/>
+		</parameters>
+	</xhtml-macro>
 
 	<!-- add our i18n resource -->
 	<resource type="i18n" name="i18n" location="dashboard-plus" />
