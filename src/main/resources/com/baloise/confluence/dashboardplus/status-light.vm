@@ -2,15 +2,14 @@
 <div class="dplus-text">
 	<a style="text-decoration: none; color: black;" href="${hyperlinkURL}" target="${hyperlinkTarget}"
 		#if ( ! ${showDetails} || ${showFailedTestDetailsAsTooltip} )
-title="
-			#if ( ! ${showDetails} )
+title="#if ( ! ${showDetails} )
 ${lastRunWhen} [${lastRunDuration}]
 ${testInfo}
 
-			#end
-			#if ( ${showFailedTestDetailsAsTooltip} )
+#end
+#if ( ${showFailedTestDetailsAsTooltip} )
 ${testDetails}
-			#end
+#end
 "
 		#end
 >
