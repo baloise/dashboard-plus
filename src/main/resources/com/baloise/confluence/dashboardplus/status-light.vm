@@ -1,4 +1,5 @@
 #requireResource("com.baloise.confluence.dashboard-plus:dashboard-plus-resources")
+<div style="text-align: center;">
 <div class="dplus-text">
 	#if ( ${hyperlinkURL} != "" )
 	<a style="text-decoration: none; color: black;" href="${hyperlinkURL}" target="${hyperlinkTarget}"
@@ -22,7 +23,11 @@ ${testDetails}
 			      <br/>
 			  </span>
 	      #end
-	      <span class="dplus dplus-light ${color.getCSSClass($applyOutline)}">${label}</span>
+	      <span class="dplus dplus-light ${color.getCSSClass($applyOutline)}"
+	#if ( ${fontSize} != "" )
+	      	style="font-size: ${fontSize};"
+	#end
+	      >${label}</span>
 	      #if ( ${showDetails} )
 			  <span class="dplus-text">
 				  <br/>
@@ -32,4 +37,5 @@ ${testDetails}
 	#if ( ${hyperlinkURL} != "" )
 	</a>
 	#end
+</div>
 </div>

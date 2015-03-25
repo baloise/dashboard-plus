@@ -38,6 +38,7 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_HYPERLINKTARGET = "hyperlinkTarget";
 	private static final String MACRO_PARAM_NAME_APPLYOUTLINESTYLE = "applyOutlineStyle";
 	private static final String MACRO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP = "showFailedTestDetailsAsTooltip";
+	private static final String MACRO_PARAM_NAME_FONTSIZE = "fontSize";
 
 	private static final String MACRO_PARAM_DEFAULT_HOST = Default
 			.getString("JenkinsJobStatusMacro.host"); //$NON-NLS-1$
@@ -67,6 +68,8 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 			.getString("JenkinsJobStatusMacro.applyOutlineStyle"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_SHOWFAILEDTESTDETAILSASTOOLTIP = Default
 			.getString("JenkinsJobStatusMacro.showFailedTestDetailsAsTooltip"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = Default
+			.getString("JenkinsJobStatusMacro.fontSize"); //$NON-NLS-1$
 
 	/* Automatically injected spring components */
 	// private final XhtmlContent xhtmlUtils;
@@ -148,6 +151,7 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				.put(VELO_PARAM_NAME_APPLY_OUTLINE, params.applyOutlineStyle);
 		veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP,
 				params.showFailedTestDetailsAsTooltip);
+		veloContext.put(VELO_PARAM_NAME_FONTSIZE, params.fontSize);
 
 		String result = renderer.render(VelocityUtils.getRenderedTemplate(
 				VELOCITY_TEMPLATE, veloContext), conversionContext);
@@ -270,11 +274,9 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				loadDefaultedParamValue(parameters, MACRO_PARAM_NAME_PERIOD,
 						MACRO_PARAM_DEFAULT_PERIOD), -Double.MAX_VALUE,
 				Double.MAX_VALUE);
-
 		params.showDetails = Boolean.parseBoolean(loadDefaultedParamValue(
 				parameters, MACRO_PARAM_NAME_SHOWDETAILS,
 				MACRO_PARAM_DEFAULT_SHOWDETAILS));
-
 		params.doesReflectTest = Boolean.parseBoolean(loadDefaultedParamValue(
 				parameters, MACRO_PARAM_NAME_DOESREFLECTTEST,
 				MACRO_PARAM_DEFAULT_DOESREFLECTTEST));
@@ -290,26 +292,24 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				loadDefaultedParamValue(parameters,
 						MACRO_PARAM_NAME_THRESHOLD2,
 						MACRO_PARAM_DEFAULT_THRESHOLD2), 0d, params.threshold1);
-
 		params.hyperlinkURL = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_HYPERLINKURL, MACRO_PARAM_DEFAULT_HYPERLINKURL);
 		params.hyperlinkTarget = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_HYPERLINKTARGET,
 				MACRO_PARAM_DEFAULT_HYPERLINKTARGET);
-
 		params.inclSkippedTests = Boolean.parseBoolean(loadDefaultedParamValue(
 				parameters, MACRO_PARAM_NAME_INCLSKIPPEDTESTS,
 				MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS));
-
 		params.applyOutlineStyle = Boolean
 				.parseBoolean(loadDefaultedParamValue(parameters,
 						MACRO_PARAM_NAME_APPLYOUTLINESTYLE,
 						MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE));
-
 		params.showFailedTestDetailsAsTooltip = Boolean
 				.parseBoolean(loadDefaultedParamValue(parameters,
 						MACRO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP,
 						MACRO_PARAM_DEFAULT_SHOWFAILEDTESTDETAILSASTOOLTIP));
+		params.fontSize = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_FONTSIZE, MACRO_PARAM_DEFAULT_FONTSIZE);
 
 		return params;
 	}
@@ -362,7 +362,7 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 	}
 
 	private static class Params {
-		String host, jobName, label, hyperlinkURL, hyperlinkTarget;
+		String host, jobName, label, hyperlinkURL, hyperlinkTarget, fontSize;
 		double period;
 		boolean showDetails, doesReflectTest, simpleThresholdModel,
 				inclSkippedTests, applyOutlineStyle,

@@ -32,6 +32,7 @@
 			<parameter name="hyperlinkTarget" type="string" default="_blank"/>
 			<parameter name="inclSkippedTests" type="boolean" default="false"/>
 			<parameter name="applyOutlineStyle" type="boolean" default="false"/>
+			<parameter name="fontSize" type="string"/>
 		</parameters>
 	</xhtml-macro>
 	<xhtml-macro name="jenkins-job-status" class="com.baloise.confluence.dashboardplus.JenkinsJobStatusMacro"
@@ -56,6 +57,7 @@
 			<parameter name="inclSkippedTests" type="boolean" default="false"/>
 			<parameter name="applyOutlineStyle" type="boolean" default="false"/>
 			<parameter name="showFailedTestDetailsAsTooltip" type="boolean" default="true"/>
+			<parameter name="fontSize" type="string"/>
 		</parameters>
 	</xhtml-macro>
 	<xhtml-macro name="static-status-light" class="com.baloise.confluence.dashboardplus.StaticStatusLightMacro"
@@ -75,6 +77,7 @@
 			<parameter name="hyperlinkURL" type="string"/>
 			<parameter name="hyperlinkTarget" type="string" default="_blank"/>
 			<parameter name="applyOutlineStyle" type="boolean" default="false"/>
+			<parameter name="fontSize" type="string"/>
 		</parameters>
 	</xhtml-macro>
 

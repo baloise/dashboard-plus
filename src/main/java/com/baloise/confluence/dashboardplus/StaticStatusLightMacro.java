@@ -19,6 +19,7 @@ public class StaticStatusLightMacro extends StatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_HYPERLINKURL = "hyperlinkURL"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_HYPERLINKTARGET = "hyperlinkTarget";
 	private static final String MACRO_PARAM_NAME_APPLYOUTLINESTYLE = "applyOutlineStyle";
+	private static final String MACRO_PARAM_NAME_FONTSIZE = "fontSize";
 
 	private static final String MACRO_PARAM_DEFAULT_LABEL = Default
 			.getString("StaticStatusLightMacro.label"); //$NON-NLS-1$
@@ -30,6 +31,8 @@ public class StaticStatusLightMacro extends StatusLightBasedMacro {
 			.getString("StaticStatusLightMacro.hyperlinkTarget"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = Default
 			.getString("StaticStatusLightMacro.applyOutlineStyle"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = Default
+			.getString("StaticStatusLightMacro.fontSize"); //$NON-NLS-1$
 
 	public StaticStatusLightMacro(/* XhtmlContent xhtmlUtils, */
 	/* ApplicationLinkService applicationLinkService, */Renderer renderer,
@@ -56,6 +59,7 @@ public class StaticStatusLightMacro extends StatusLightBasedMacro {
 				.put(VELO_PARAM_NAME_APPLY_OUTLINE, params.applyOutlineStyle);
 		veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, false);
 		veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP, false);
+		veloContext.put(VELO_PARAM_NAME_FONTSIZE, params.fontSize);
 
 		String result = renderer.render(VelocityUtils.getRenderedTemplate(
 				VELOCITY_TEMPLATE, veloContext), conversionContext);
@@ -79,11 +83,13 @@ public class StaticStatusLightMacro extends StatusLightBasedMacro {
 				.parseBoolean(loadDefaultedParamValue(parameters,
 						MACRO_PARAM_NAME_APPLYOUTLINESTYLE,
 						MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE));
+		params.fontSize = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_FONTSIZE, MACRO_PARAM_DEFAULT_FONTSIZE);
 		return params;
 	}
 
 	private static class Params {
-		String label, color, hyperlinkURL, hyperlinkTarget;
+		String label, color, hyperlinkURL, hyperlinkTarget, fontSize;
 		boolean applyOutlineStyle;
 	}
 

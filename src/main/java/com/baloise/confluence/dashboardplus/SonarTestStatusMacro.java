@@ -33,6 +33,7 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_INCLSKIPPEDTESTS = "inclSkippedTests"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_HYPERLINKTARGET = "hyperlinkTarget";
 	private static final String MACRO_PARAM_NAME_APPLYOUTLINESTYLE = "applyOutlineStyle";
+	private static final String MACRO_PARAM_NAME_FONTSIZE = "fontSize";
 
 	private static final String MACRO_PARAM_DEFAULT_HOST = Default
 			.getString("SonarTestStatusMacro.host"); //$NON-NLS-1$
@@ -58,6 +59,8 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 			.getString("SonarTestStatusMacro.hyperlinkTarget"); //$NON-NLS-1$
 	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = Default
 			.getString("SonarTestStatusMacro.applyOutlineStyle"); //$NON-NLS-1$
+	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = Default
+			.getString("SonarTestStatusMacro.fontSize"); //$NON-NLS-1$
 
 	public SonarTestStatusMacro(/* XhtmlContent xhtmlUtils, */
 	/* ApplicationLinkService applicationLinkService, */Renderer renderer,
@@ -131,6 +134,7 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 		veloContext
 				.put(VELO_PARAM_NAME_APPLY_OUTLINE, params.applyOutlineStyle);
 		veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP, false);
+		veloContext.put(VELO_PARAM_NAME_FONTSIZE, params.fontSize);
 
 		String result = renderer.render(VelocityUtils.getRenderedTemplate(
 				VELOCITY_TEMPLATE, veloContext), conversionContext);
@@ -203,7 +207,6 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 				MACRO_PARAM_NAME_HOST, MACRO_PARAM_DEFAULT_HOST);
 		params.resourceId = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_RESOURCEID, MACRO_PARAM_DEFAULT_RESOURCEID);
-
 		params.label = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_LABEL, MACRO_PARAM_DEFAULT_LABEL);
 		params.simpleThresholdModel = Boolean
@@ -222,25 +225,23 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 				loadDefaultedParamValue(parameters, MACRO_PARAM_NAME_PERIOD,
 						MACRO_PARAM_DEFAULT_PERIOD), -Double.MAX_VALUE,
 				Double.MAX_VALUE);
-
 		params.showDetails = Boolean.parseBoolean(loadDefaultedParamValue(
 				parameters, MACRO_PARAM_NAME_SHOWDETAILS,
 				MACRO_PARAM_DEFAULT_SHOWDETAILS));
-
 		params.hyperlinkURL = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_HYPERLINKURL, MACRO_PARAM_DEFAULT_HYPERLINKURL);
 		params.hyperlinkTarget = loadDefaultedParamValue(parameters,
 				MACRO_PARAM_NAME_HYPERLINKTARGET,
 				MACRO_PARAM_DEFAULT_HYPERLINKTARGET);
-
 		params.inclSkippedTests = Boolean.parseBoolean(loadDefaultedParamValue(
 				parameters, MACRO_PARAM_NAME_INCLSKIPPEDTESTS,
 				MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS));
-
 		params.applyOutlineStyle = Boolean
 				.parseBoolean(loadDefaultedParamValue(parameters,
 						MACRO_PARAM_NAME_APPLYOUTLINESTYLE,
 						MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE));
+		params.fontSize = loadDefaultedParamValue(parameters,
+				MACRO_PARAM_NAME_FONTSIZE, MACRO_PARAM_DEFAULT_FONTSIZE);
 		return params;
 	}
 
@@ -275,7 +276,8 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	}
 
 	private static class Params {
-		String host, resourceId, label, hyperlinkURL, hyperlinkTarget;
+		String host, resourceId, label, hyperlinkURL, hyperlinkTarget,
+				fontSize;
 		double threshold1, threshold2, period;
 		boolean showDetails, simpleThresholdModel, inclSkippedTests,
 				applyOutlineStyle;

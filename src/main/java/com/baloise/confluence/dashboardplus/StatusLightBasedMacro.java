@@ -33,6 +33,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 	protected static final String VELO_PARAM_NAME_APPLY_OUTLINE = "applyOutline";
 	protected static final String VELO_PARAM_NAME_TESTDETAILS = "testDetails";
 	protected static final String VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP = "showFailedTestDetailsAsTooltip";
+	protected static final String VELO_PARAM_NAME_FONTSIZE = "fontSize";
 
 	/* Automatically injected spring components */
 	// private final XhtmlContent xhtmlUtils;
