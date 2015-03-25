@@ -2,6 +2,7 @@ div.dplus-text {
 	text-align: center;
 	text-decoration: none;
 	color: black;
+	margin-top: 2px; margin-right: 0px; margin-bottom: 2px; margin-left: 0px;
 	/* display: inline-block; */
 }
 
@@ -34,7 +35,7 @@ span.dplus-text {
 .dplus-light.dplus-light-subtle {
 	background-color: #fff;
 	border-color: #ccc;
-	color: #aaa;
+	color: #333;
 }
 
 .dplus-light-green {
