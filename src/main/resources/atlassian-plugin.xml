@@ -71,7 +71,7 @@
 				<value name="Grey"/>
 				<value name="Brown"/>
 			</parameter>
-			<parameter name="label" type="string"/>
+			<parameter name="label" type="string" default="?"/>
 			<parameter name="hyperlinkURL" type="string"/>
 			<parameter name="hyperlinkTarget" type="string" default="_blank"/>
 			<parameter name="applyOutlineStyle" type="boolean" default="false"/>
