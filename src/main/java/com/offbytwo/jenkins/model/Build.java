@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.apache.http.client.HttpResponseException;
 
+import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
 
 public class Build extends BaseModel {
@@ -49,31 +50,25 @@ public class Build extends BaseModel {
 		return testReport(client, url, recursiveChildLoading);
 	}
 
-	public static TestReport testReport(JenkinsHttpClient client, String url,
+	private static TestReport testReport(JenkinsHttpClient client, String url,
 			boolean recursiveChildLoading) throws IOException {
 		TestReport result = null;
-		try {
-			result = client.get(url + "/testReport", TestReport.class);
-			result.setMissingValues();
+		result = client.get(JenkinsServer.encode(url + "/testReport"),
+				TestReport.class);
+		result.setMissingValues();
 
-			if (recursiveChildLoading && result.getChildReports() != null) {
-				List<TestReportSuite> suites = new ArrayList<TestReportSuite>();
-				if (result.getSuites() != null) {
-					suites.addAll(Arrays.asList(result.getSuites()));
-				}
-				for (TestReportChildReport report : result.getChildReports()) {
-					TestReport testReport = testReport(client, report
-							.getChild().getUrl(), recursiveChildLoading);
-					suites.addAll(Arrays.asList(testReport.getSuites()));
-				}
-				TestReportSuite[] resultSuites = new TestReportSuite[suites
-						.size()];
-				result.setSuites(suites.toArray(resultSuites));
+		if (recursiveChildLoading && result.getChildReports() != null) {
+			List<TestReportSuite> suites = new ArrayList<TestReportSuite>();
+			if (result.getSuites() != null) {
+				suites.addAll(Arrays.asList(result.getSuites()));
 			}
-		} catch (HttpResponseException e) {
-			// if (e.getStatusCode() == 404) {
-			result = new TestReport();
-			// }
+			for (TestReportChildReport report : result.getChildReports()) {
+				TestReport testReport = testReport(client, report.getChild()
+						.getUrl(), recursiveChildLoading);
+				suites.addAll(Arrays.asList(testReport.getSuites()));
+			}
+			TestReportSuite[] resultSuites = new TestReportSuite[suites.size()];
+			result.setSuites(suites.toArray(resultSuites));
 		}
 		result.setClient(client);
 		return result;

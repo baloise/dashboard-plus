@@ -8,12 +8,12 @@ package com.offbytwo.jenkins;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 
 import org.apache.http.client.HttpResponseException;
 
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
 import com.offbytwo.jenkins.model.JobWithDetails;
-import com.offbytwo.jenkins.model.MavenJobWithDetails;
 
 /**
  * The main starting point for interacting with a Jenkins server.
@@ -64,9 +64,9 @@ public class JenkinsServer {
 	 */
 	public JobWithDetails getJob(String jobName) throws IOException {
 		try {
-			// JobWithDetails job = client.get("/job/" + encode(jobName), JobWithDetails.class);
-			JobWithDetails job = client.get("/job/" + jobName,
+			JobWithDetails job = client.get("/job/" + encode(jobName),
 					JobWithDetails.class);
+			// JobWithDetails job = client.get("/job/" + jobName, JobWithDetails.class);
 			job.setClient(client);
 
 			return job;
@@ -79,24 +79,11 @@ public class JenkinsServer {
 
 	}
 
-	public MavenJobWithDetails getMavenJob(String jobName) throws IOException {
-		try {
-			// MavenJobWithDetails job = client.get("/job/" + encode(jobName), MavenJobWithDetails.class);
-			MavenJobWithDetails job = client.get("/job/" + jobName,
-					MavenJobWithDetails.class);
-			job.setClient(client);
-
-			return job;
-		} catch (HttpResponseException e) {
-			if (e.getStatusCode() == 404) {
-				return null;
-			}
-			throw e;
-		}
+	public static String encode(String path) {
+		// seems Jenkins prefers some characters in ASCII representation, especially / and : that are encountered in case of Maven multi-module projects
+		String result = URLEncoder.encode(path).replaceAll("\\+", "%20")
+				.replaceAll("\\%2F", "/").replaceAll("\\%3A", ":");
+		return result;
 	}
-	/*
-	 * private String encode(String pathPart) { // jenkins doesn't like the +
-	 * for space, use %20 instead return
-	 * URLEncoder.encode(pathPart).replaceAll("\\+", "%20"); }
-	 */
+
 }
