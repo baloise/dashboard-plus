@@ -31,7 +31,8 @@ public class JenkinsService implements IJenkinsService {
 			JobWithDetails job = jenkins.getJob(jobName);
 
 			if (job == null) {
-				throw new ResourceNotFoundException();
+				throw new ResourceNotFoundException("No job '" + jobName
+						+ "' found on Jenkins @ " + host);
 			}
 
 			result = new JenkinsData();
@@ -57,9 +58,17 @@ public class JenkinsService implements IJenkinsService {
 			}
 
 		} catch (IOException e) {
-			throw new ServiceUnavailableException();
+			throw new ServiceUnavailableException(
+					"IO exception occured while retrieving information from Jenkins @ "
+							+ host + ", root cause: " + e.getMessage(), e);
 		} catch (URISyntaxException e) {
-			throw new ServiceUnavailableException();
+			throw new ServiceUnavailableException(
+					"Unexpected exception occured while retrieving information from Jenkins @ "
+							+ host + ", root cause: " + e.getMessage(), e);
+		} catch (RuntimeException e) {
+			throw new ServiceUnavailableException(
+					"Runtime exception occured while retrieving information from Jenkins @ "
+							+ host + ", root cause: " + e.getMessage(), e);
 		}
 		return result;
 	}

@@ -41,14 +41,17 @@ public class SonarService implements ISonarService {
 			Resource resource = sonar.find(query);
 
 			if (resource == null) {
-				throw new ResourceNotFoundException();
+				throw new ResourceNotFoundException("No resource '"
+						+ resourceId + "' found on Sonar @ " + host);
 			} else {
 				result = new SonarData(resource);
 			}
 		} catch (RuntimeException /*
 								 * org.sonar.wsclient.connectors.ConnectionException
 								 */e) {
-			throw new ServiceUnavailableException();
+			throw new ServiceUnavailableException(
+					"Runtime exception occured while retrieving information from Sonar @ "
+							+ host + ", root cause: " + e.getMessage(), e);
 		}
 
 		return result;

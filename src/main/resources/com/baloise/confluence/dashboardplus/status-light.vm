@@ -1,7 +1,7 @@
 #requireResource("com.baloise.confluence.dashboard-plus:dashboard-plus-resources")
 <div style="text-align: center;">
 <div class="dplus-text">
-	#if ( ${hyperlinkURL} != "" )
+	#if ( ${hyperlinkURL} && ${hyperlinkURL} != "" )
 	<a style="text-decoration: none; color: black;" href="${hyperlinkURL}" target="${hyperlinkTarget}"
 		#if ( ! ${showDetails} || ${showFailedTestDetailsAsTooltip} )
 title="#if ( ! ${showDetails} && ${lastRunWhen} && ${lastRunDuration} && ${testInfo} )
@@ -9,7 +9,7 @@ ${lastRunWhen} [${lastRunDuration}]
 ${testInfo}
 
 #end
-#if ( ${showFailedTestDetailsAsTooltip} )
+#if ( ${showFailedTestDetailsAsTooltip} && ${testDetails} )
 ${testDetails}
 #end
 "
@@ -34,7 +34,7 @@ ${testDetails}
 				  ${testInfo}
 			  </span>
 	      #end
-	#if ( ${hyperlinkURL} != "" )
+	#if ( ${hyperlinkURL} && ${hyperlinkURL} != "" )
 	</a>
 	#end
 </div>
