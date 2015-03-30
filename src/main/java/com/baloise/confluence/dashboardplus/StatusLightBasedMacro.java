@@ -67,7 +67,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 
 	public static enum StatusColor {
 		// Take care to the position of the constants, it is used on aggregation
-		Blue, Green, Yellow, Red, Grey;
+		Blue, Grey, Green, Yellow, Red;
 
 		public String getCSSClass(boolean applyOutline) {
 			String result;

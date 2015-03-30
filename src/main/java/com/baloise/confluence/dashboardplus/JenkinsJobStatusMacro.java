@@ -139,18 +139,22 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 					+ "/job/" //$NON-NLS-1$
 					+ params.jobName);
 			veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+			veloContext.put(VELO_PARAM_NAME_TESTDETAILS, e.getMessage());
+			veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP,
+					true);
 		} catch (ServiceUnavailableException e) {
 			veloContext.put(VELO_PARAM_NAME_LABEL, "!"); //$NON-NLS-1$
 			veloContext.put(VELO_PARAM_NAME_COLOR, StatusColor.Grey);
 			veloContext.put(VELO_PARAM_NAME_HYPERLINK_URL, params.host);
 			veloContext.put(VELO_PARAM_NAME_SHOWDETAILS, false);
+			veloContext.put(VELO_PARAM_NAME_TESTDETAILS, e.getMessage());
+			veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP,
+					true);
 		}
 		veloContext.put(VELO_PARAM_NAME_HYPERLINK_TARGET,
 				params.hyperlinkTarget);
 		veloContext
 				.put(VELO_PARAM_NAME_APPLY_OUTLINE, params.applyOutlineStyle);
-		veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP,
-				params.showFailedTestDetailsAsTooltip);
 		veloContext.put(VELO_PARAM_NAME_FONTSIZE, params.fontSize);
 
 		String result = renderer.render(VelocityUtils.getRenderedTemplate(
@@ -206,6 +210,8 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 			StatusLightData slData) {
 
 		veloContext.put(VELO_PARAM_NAME_COLOR, slData.getColor());
+		veloContext.put(VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP,
+				params.showFailedTestDetailsAsTooltip);
 
 		if (jenkinsData.getLastCompletedBuildDetails() == null) {
 			veloContext.put(VELO_PARAM_NAME_LABEL, "-"); //$NON-NLS-1$
