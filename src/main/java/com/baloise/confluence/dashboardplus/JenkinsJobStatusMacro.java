@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.content.render.xhtml.Renderer;
 import com.atlassian.confluence.core.FormatSettingsManager;
@@ -188,21 +190,23 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 
 	private static String computeTestDetails(TestReport testReport) {
 		String result = "";
+		final String lineSeparator = System.getProperty("line.separator");
 		if (testReport.getSuites() != null) {
 			for (TestReportSuite suite : testReport.getSuites()) {
 				if (suite.getCases() != null) {
 					for (TestReportSuiteCase aCase : suite.getCases()) {
 						if ("FAILED".equals(aCase.getStatus())) {
 							result += "(!) Test " + aCase.getClassName() + "."
-									+ aCase.getName() + " FAILED\n";
+									+ aCase.getName() + " FAILED";
+							result += lineSeparator;
 							result += aCase.getErrorDetails();
+							result += lineSeparator;
 						}
-
 					}
 				}
 			}
 		}
-		return result;
+		return StringEscapeUtils.unescapeHtml(result);
 	}
 
 	private void populateVeloContext(Params params,
