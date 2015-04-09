@@ -106,16 +106,17 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				split = splitAdd;
 			}
 
-			JenkinsData primaryJenkinsData = JenkinsService
-					.createServiceAndFetchData(params.host, split[0],
-							params.showFailedTestDetailsAsTooltip);
+			JenkinsService jenkinsService = new JenkinsService();
+			JenkinsData primaryJenkinsData = jenkinsService.fetchData(
+					params.host, split[0],
+					params.showFailedTestDetailsAsTooltip);
 			StatusLightData primarySLData = evaluateJenkinsData(params,
 					primaryJenkinsData);
 
 			for (int i = 1; i < split.length; i++) {
 				try {
-					JenkinsData secondaryJenkinsData = JenkinsService
-							.createServiceAndFetchData(params.host, split[i],
+					JenkinsData secondaryJenkinsData = jenkinsService
+							.fetchData(params.host, split[i],
 									params.showFailedTestDetailsAsTooltip);
 					StatusLightData secondarySLData = evaluateJenkinsData(
 							params, secondaryJenkinsData);
@@ -195,9 +196,10 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 			for (TestReportSuite suite : testReport.getSuites()) {
 				if (suite.getCases() != null) {
 					for (TestReportSuiteCase aCase : suite.getCases()) {
-						if ("FAILED".equals(aCase.getStatus())) {
+						if (!"PASSED".equals(aCase.getStatus())) {
 							result += "(!) Test " + aCase.getClassName() + "."
-									+ aCase.getName() + " FAILED";
+									+ aCase.getName() + " is marked as "
+									+ aCase.getStatus();
 							result += lineSeparator;
 							result += aCase.getErrorDetails();
 							result += lineSeparator;

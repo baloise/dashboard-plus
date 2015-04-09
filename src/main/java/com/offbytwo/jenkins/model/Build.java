@@ -68,8 +68,7 @@ public class Build extends BaseModel {
 				suites.addAll(Arrays.asList(testReport.getSuites()));
 			}
 			TestReportSuite[] resultSuites = new TestReportSuite[suites.size()];
-			suites.toArray(resultSuites);
-			result.setSuites(resultSuites);
+			result.setSuites(suites.toArray(resultSuites));
 		}
 		result.setClient(client);
 		return result;
