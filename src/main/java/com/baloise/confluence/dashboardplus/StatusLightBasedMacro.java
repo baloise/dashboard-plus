@@ -176,4 +176,22 @@ public abstract class StatusLightBasedMacro implements Macro {
 				new Date(), dateFormatter);
 		return friendlyDateFormatter;
 	}
+
+	protected NumberFormat newNumberFormatter() {
+		// Get current user's timezone, or default one
+		User authUser = AuthenticatedUserThreadLocal.getUser();
+		NumberFormat result = null;
+		if (authUser != null) {
+			ConfluenceUserPreferences prefs = userAccessor
+					.getConfluenceUserPreferences(authUser);
+			if (prefs != null && prefs.getLocale() != null) {
+				result = NumberFormat.getNumberInstance(prefs.getLocale());
+			}
+		}
+		if (result == null) {
+			// anonymous
+			result = NumberFormat.getNumberInstance();
+		}
+		return result;
+	}
 }

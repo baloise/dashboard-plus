@@ -1,6 +1,7 @@
 package com.baloise.confluence.dashboardplus;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -253,11 +254,13 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 			veloContext.put(VELO_PARAM_NAME_LASTRUNDURATION,
 					formatDuration(slData.getLastRunDurationInMillis()));
 
-			String testInfo = String.valueOf(slData.getTestPassCount());
-			if (slData.getTestTotalCount() == 0) {
+			NumberFormat numberFormatter = newNumberFormatter();
+			String testInfo = numberFormatter.format(slData.getTestPassCount());
+			if (slData.getTestTotalCount() <= 1) {
 				testInfo += " test"; //$NON-NLS-1$
 			} else {
-				testInfo += "/" + slData.getTestTotalCount()
+				testInfo += "/"
+						+ numberFormatter.format(slData.getTestTotalCount())
 						+ " tests (" //$NON-NLS-1$ //$NON-NLS-2$
 						+ newPercentFormatter().format(
 								slData.calcSuccessRatio()) + ")"; //$NON-NLS-1$
