@@ -1,7 +1,6 @@
 package com.baloise.confluence.dashboardplus;
 
 import java.io.Serializable;
-import java.text.NumberFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -194,18 +193,7 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 		veloContext.put(VELO_PARAM_NAME_LASTRUNDURATION,
 				formatDuration(slData.getLastRunDurationInMillis()));
 
-		NumberFormat numberFormatter = newNumberFormatter();
-		String testInfo = numberFormatter.format(slData.getTestPassCount());
-		if (slData.getTestTotalCount() <= 1) {
-			testInfo += " test"; //$NON-NLS-1$
-		} else {
-			testInfo += "/" //$NON-NLS-1$
-					+ numberFormatter.format(slData.getTestTotalCount())
-					+ " tests (" //$NON-NLS-1$
-					+ newPercentFormatter().format(slData.calcSuccessRatio())
-					+ ")"; //$NON-NLS-1$
-		}
-		veloContext.put(VELO_PARAM_NAME_TESTINFO, testInfo);
+		veloContext.put(VELO_PARAM_NAME_TESTINFO, computeTestInfo(slData));
 	}
 
 	private Params extractParams(Map<String, String> parameters)

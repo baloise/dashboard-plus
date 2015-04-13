@@ -194,4 +194,21 @@ public abstract class StatusLightBasedMacro implements Macro {
 		}
 		return result;
 	}
+
+	protected String computeTestInfo(StatusLightData slData) {
+		NumberFormat numberFormatter = newNumberFormatter();
+		String testInfo = numberFormatter.format(slData.getTestPassCount());
+		if (slData.getTestTotalCount() > 0) {
+			testInfo += "/"
+					+ numberFormatter.format(slData.getTestTotalCount());
+		}
+		if (slData.getTestTotalCount() <= 1) {
+			testInfo += " test"; //$NON-NLS-1$
+		} else {
+			testInfo += " tests (" //$NON-NLS-1$ //$NON-NLS-2$
+					+ newPercentFormatter().format(slData.calcSuccessRatio())
+					+ ")"; //$NON-NLS-1$
+		}
+		return testInfo;
+	}
 }
