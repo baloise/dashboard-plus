@@ -183,26 +183,35 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 					.getLastCompletedBuildTestReport().getTotalCount(
 							params.inclSkippedTests));
 
-			result.setTestDetails(computeTestDetails(jenkinsData
-					.getLastCompletedBuildTestReport()));
+			result.setTestDetails(computeTestDetails(
+					jenkinsData.getLastCompletedBuildTestReport(),
+					params.inclSkippedTests));
 		}
 		return result;
 	}
 
-	private static String computeTestDetails(TestReport testReport) {
+	private static String computeTestDetails(TestReport testReport,
+			boolean inclSkippedTests) {
 		String result = "";
 		final String lineSeparator = System.getProperty("line.separator");
 		if (testReport.getSuites() != null) {
 			for (TestReportSuite suite : testReport.getSuites()) {
 				if (suite.getCases() != null) {
 					for (TestReportSuiteCase aCase : suite.getCases()) {
-						if (!"PASSED".equals(aCase.getStatus())) {
+						// exclude FIXED and PASSED
+						// exclude also SKIPPED depending on macro param
+						if (!"PASSED".equals(aCase.getStatus())
+								&& !"FIXED".equals(aCase.getStatus())
+								&& (!"SKIPPED".equals(aCase.getStatus()) || ("SKIPPED"
+										.equals(aCase.getStatus()) && inclSkippedTests))) {
 							result += "(!) Test " + aCase.getClassName() + "."
 									+ aCase.getName() + " is marked as "
 									+ aCase.getStatus();
 							result += lineSeparator;
-							result += aCase.getErrorDetails();
-							result += lineSeparator;
+							if (aCase.getErrorDetails() != null) {
+								result += aCase.getErrorDetails();
+								result += lineSeparator;
+							}
 						}
 					}
 				}
