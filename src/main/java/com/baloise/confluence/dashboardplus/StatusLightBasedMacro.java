@@ -176,4 +176,39 @@ public abstract class StatusLightBasedMacro implements Macro {
 				new Date(), dateFormatter);
 		return friendlyDateFormatter;
 	}
+
+	protected NumberFormat newNumberFormatter() {
+		// Get current user's timezone, or default one
+		User authUser = AuthenticatedUserThreadLocal.getUser();
+		NumberFormat result = null;
+		if (authUser != null) {
+			ConfluenceUserPreferences prefs = userAccessor
+					.getConfluenceUserPreferences(authUser);
+			if (prefs != null && prefs.getLocale() != null) {
+				result = NumberFormat.getNumberInstance(prefs.getLocale());
+			}
+		}
+		if (result == null) {
+			// anonymous
+			result = NumberFormat.getNumberInstance();
+		}
+		return result;
+	}
+
+	protected String computeTestInfo(StatusLightData slData) {
+		NumberFormat numberFormatter = newNumberFormatter();
+		String testInfo = numberFormatter.format(slData.getTestPassCount());
+		if (slData.getTestTotalCount() > 0) {
+			testInfo += "/"
+					+ numberFormatter.format(slData.getTestTotalCount());
+		}
+		if (slData.getTestTotalCount() <= 1) {
+			testInfo += " test"; //$NON-NLS-1$
+		} else {
+			testInfo += " tests (" //$NON-NLS-1$ //$NON-NLS-2$
+					+ newPercentFormatter().format(slData.calcSuccessRatio())
+					+ ")"; //$NON-NLS-1$
+		}
+		return testInfo;
+	}
 }

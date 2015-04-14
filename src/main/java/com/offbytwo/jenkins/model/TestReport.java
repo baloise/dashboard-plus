@@ -13,19 +13,21 @@ public class TestReport extends BaseModel {
 	TestReportSuite[] suites;
 
 	public void setMissingValues() {
-		// Because all Jenkins test reports do not provide always with the same data, sometimes failCount+passCount, sometimes failCount+totalCount
+		// Because Jenkins test reports dont have the same fields for
+		// - job: failCount/skipCount/totalCount (passCount missing)
+		// - job's maven module: failCount/passCount/skipCount (totalCount missing)
+
+		// Note that skipCount is considered here while deriving totalCount or passCount that needs to be set
 		if (totalCount == 0) {
-			totalCount = failCount + passCount;
+			totalCount = failCount + passCount + skipCount;
 		} else {
-			passCount = totalCount - failCount;
+			passCount = totalCount - failCount - skipCount;
 		}
 	}
 
 	public double calcSuccessRatio(boolean inclSkippedTests) {
-		if (inclSkippedTests)
-			return ((double) passCount) / ((double) (totalCount + skipCount));
-		else
-			return ((double) passCount) / ((double) totalCount);
+		return ((double) passCount)
+				/ ((double) getTotalCount(inclSkippedTests));
 	}
 
 	public int getFailCount() {
@@ -46,9 +48,9 @@ public class TestReport extends BaseModel {
 
 	public int getTotalCount(boolean inclSkippedTests) {
 		if (inclSkippedTests)
-			return totalCount + skipCount;
-		else
 			return totalCount;
+		else
+			return totalCount - skipCount;
 	}
 
 	public void setTotalCount(int totalCount) {

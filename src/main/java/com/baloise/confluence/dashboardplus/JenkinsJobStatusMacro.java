@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
 import com.atlassian.confluence.content.render.xhtml.Renderer;
 import com.atlassian.confluence.core.FormatSettingsManager;
@@ -104,16 +106,17 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				split = splitAdd;
 			}
 
-			JenkinsData primaryJenkinsData = JenkinsService
-					.createServiceAndFetchData(params.host, split[0],
-							params.showFailedTestDetailsAsTooltip);
+			JenkinsService jenkinsService = new JenkinsService();
+			JenkinsData primaryJenkinsData = jenkinsService.fetchData(
+					params.host, split[0],
+					params.showFailedTestDetailsAsTooltip);
 			StatusLightData primarySLData = evaluateJenkinsData(params,
 					primaryJenkinsData);
 
 			for (int i = 1; i < split.length; i++) {
 				try {
-					JenkinsData secondaryJenkinsData = JenkinsService
-							.createServiceAndFetchData(params.host, split[i],
+					JenkinsData secondaryJenkinsData = jenkinsService
+							.fetchData(params.host, split[i],
 									params.showFailedTestDetailsAsTooltip);
 					StatusLightData secondarySLData = evaluateJenkinsData(
 							params, secondaryJenkinsData);
@@ -180,29 +183,41 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 					.getLastCompletedBuildTestReport().getTotalCount(
 							params.inclSkippedTests));
 
-			result.setTestDetails(computeTestDetails(jenkinsData
-					.getLastCompletedBuildTestReport()));
+			result.setTestDetails(computeTestDetails(
+					jenkinsData.getLastCompletedBuildTestReport(),
+					params.inclSkippedTests));
 		}
 		return result;
 	}
 
-	private static String computeTestDetails(TestReport testReport) {
+	private static String computeTestDetails(TestReport testReport,
+			boolean inclSkippedTests) {
 		String result = "";
+		final String lineSeparator = System.getProperty("line.separator");
 		if (testReport.getSuites() != null) {
 			for (TestReportSuite suite : testReport.getSuites()) {
 				if (suite.getCases() != null) {
 					for (TestReportSuiteCase aCase : suite.getCases()) {
-						if ("FAILED".equals(aCase.getStatus())) {
+						// exclude FIXED and PASSED
+						// exclude also SKIPPED depending on macro param
+						if (!"PASSED".equals(aCase.getStatus())
+								&& !"FIXED".equals(aCase.getStatus())
+								&& (!"SKIPPED".equals(aCase.getStatus()) || ("SKIPPED"
+										.equals(aCase.getStatus()) && inclSkippedTests))) {
 							result += "(!) Test " + aCase.getClassName() + "."
-									+ aCase.getName() + " FAILED\n";
-							result += aCase.getErrorDetails();
+									+ aCase.getName() + " is marked as "
+									+ aCase.getStatus();
+							result += lineSeparator;
+							if (aCase.getErrorDetails() != null) {
+								result += aCase.getErrorDetails();
+								result += lineSeparator;
+							}
 						}
-
 					}
 				}
 			}
 		}
-		return result;
+		return StringEscapeUtils.unescapeHtml(result);
 	}
 
 	private void populateVeloContext(Params params,
@@ -247,16 +262,7 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 			veloContext.put(VELO_PARAM_NAME_LASTRUNDURATION,
 					formatDuration(slData.getLastRunDurationInMillis()));
 
-			String testInfo = String.valueOf(slData.getTestPassCount());
-			if (slData.getTestTotalCount() == 0) {
-				testInfo += " test"; //$NON-NLS-1$
-			} else {
-				testInfo += "/" + slData.getTestTotalCount()
-						+ " tests (" //$NON-NLS-1$ //$NON-NLS-2$
-						+ newPercentFormatter().format(
-								slData.calcSuccessRatio()) + ")"; //$NON-NLS-1$
-			}
-			veloContext.put(VELO_PARAM_NAME_TESTINFO, testInfo);
+			veloContext.put(VELO_PARAM_NAME_TESTINFO, computeTestInfo(slData));
 			veloContext.put(VELO_PARAM_NAME_TESTDETAILS,
 					slData.getTestDetails());
 		}
