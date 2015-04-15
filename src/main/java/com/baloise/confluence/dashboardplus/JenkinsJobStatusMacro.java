@@ -217,7 +217,9 @@ public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
 				}
 			}
 		}
-		return StringEscapeUtils.unescapeHtml(result);
+		result = StringEscapeUtils.unescapeHtml(result);
+		result = result.replaceAll("&apos;", "'");
+		return result;
 	}
 
 	private void populateVeloContext(Params params,
