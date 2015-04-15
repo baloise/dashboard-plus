@@ -1,7 +1,10 @@
 package com.baloise.confluence.dashboardplus;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import com.atlassian.confluence.content.render.xhtml.Renderer;
@@ -179,19 +182,33 @@ public abstract class StatusLightBasedMacro implements Macro {
 
 	protected NumberFormat newNumberFormatter() {
 		// Get current user's timezone, or default one
+		/*
 		User authUser = AuthenticatedUserThreadLocal.getUser();
 		NumberFormat result = null;
 		if (authUser != null) {
+			System.out.println("authUser = " + authUser.getFullName());
 			ConfluenceUserPreferences prefs = userAccessor
 					.getConfluenceUserPreferences(authUser);
+			Locale locale = prefs.getLocale();
+			//			System.out.println("prefs.getLocale() = "+locale);
+			//			if (locale == null)  {
+			//				//locale = new Locale("de", "CH");
+			//				locale = new Locale("en", "US");
+			//				System.out.println("use locale "+locale);
+			//			}
 			if (prefs != null && prefs.getLocale() != null) {
-				result = NumberFormat.getNumberInstance(prefs.getLocale());
+				result = DecimalFormat.getNumberInstance(locale);
 			}
 		}
 		if (result == null) {
 			// anonymous
 			result = NumberFormat.getNumberInstance();
-		}
+		}*/
+		DecimalFormat result = (DecimalFormat) DecimalFormat
+				.getInstance(new Locale("de", "CH"));
+		DecimalFormatSymbols symbols = result.getDecimalFormatSymbols();
+		symbols.setGroupingSeparator('\'');
+		result.setDecimalFormatSymbols(symbols);
 		return result;
 	}
 
