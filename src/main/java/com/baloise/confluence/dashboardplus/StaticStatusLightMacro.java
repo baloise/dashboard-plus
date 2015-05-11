@@ -12,7 +12,7 @@ import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
 
-public class StaticStatusLightMacro extends StatusLightBasedMacro {
+public class StaticStatusLightMacro extends AbstractStatusLightBasedMacro {
 
 	private static final String MACRO_PARAM_NAME_LABEL = "label"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_COLOR = "color"; //$NON-NLS-1$

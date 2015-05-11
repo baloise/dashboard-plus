@@ -21,22 +21,7 @@ import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.message.I18nResolver;
 import com.atlassian.user.User;
 
-public abstract class StatusLightBasedMacro implements Macro {
-
-	protected static final String VELOCITY_TEMPLATE = "com/baloise/confluence/dashboardplus/status-light.vm";
-
-	protected static final String VELO_PARAM_NAME_TESTINFO = "testInfo";
-	protected static final String VELO_PARAM_NAME_LASTRUNDURATION = "lastRunDuration";
-	protected static final String VELO_PARAM_NAME_LASTRUNWHEN = "lastRunWhen";
-	protected static final String VELO_PARAM_NAME_SHOWDETAILS = "showDetails";
-	protected static final String VELO_PARAM_NAME_HYPERLINK_URL = "hyperlinkURL";
-	protected static final String VELO_PARAM_NAME_HYPERLINK_TARGET = "hyperlinkTarget";
-	protected static final String VELO_PARAM_NAME_COLOR = "color";
-	protected static final String VELO_PARAM_NAME_LABEL = "label";
-	protected static final String VELO_PARAM_NAME_APPLY_OUTLINE = "applyOutline";
-	protected static final String VELO_PARAM_NAME_TESTDETAILS = "testDetails";
-	protected static final String VELO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP = "showFailedTestDetailsAsTooltip";
-	protected static final String VELO_PARAM_NAME_FONTSIZE = "fontSize";
+public abstract class AbstractDPlusMacro implements Macro {
 
 	/* Automatically injected spring components */
 	// private final XhtmlContent xhtmlUtils;
@@ -47,7 +32,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 	protected final LocaleManager localeManager;
 	protected final I18nResolver i18n;
 
-	public StatusLightBasedMacro(Renderer renderer, UserAccessor userAccessor,
+	public AbstractDPlusMacro(Renderer renderer, UserAccessor userAccessor,
 			FormatSettingsManager formatSettingsManager,
 			LocaleManager localeManager, I18nResolver i18n) {
 		super();
@@ -68,27 +53,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 		return OutputType.BLOCK;
 	}
 
-	public static enum StatusColor {
-		// Take care to the position of the constants, it is used on aggregation
-		Blue, Grey, Green, Yellow, Red;
-
-		public String getCSSClass(boolean applyOutline) {
-			String result;
-			switch (StatusColor.valueOf(name())) {
-			case Grey:
-				result = "";
-				break;
-			default:
-				result = "dplus-light-" + name().toLowerCase();
-			}
-			if (applyOutline) {
-				result += " dplus-light-subtle";
-			}
-			return result;
-		}
-	}
-
-	protected static NumberFormat newPercentFormatter() {
+	public static NumberFormat newPercentFormatter() {
 		//		ConfluenceUserPreferences prefs = userAccessor
 		//				.getConfluenceUserPreferences(AuthenticatedUserThreadLocal
 		//						.get());
@@ -99,40 +64,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 		return result;
 	}
 
-	protected static String formatDuration(long duration) {
-		long dayCount = duration / (1000 * 60 * 60 * 24);
-		long hourCount = (duration - dayCount * 1000 * 60 * 60 * 24)
-				/ (1000 * 60 * 60);
-		long minCount = (duration - dayCount * 1000 * 60 * 60 * 24 - hourCount * 1000 * 60 * 60)
-				/ (1000 * 60);
-		long secCount;
-		if (duration < 1000) {
-			secCount = 1;
-		} else {
-			secCount = (duration - dayCount * 1000 * 60 * 60 * 24 - hourCount
-					* 1000 * 60 * 60 - minCount * 1000 * 60) / 1000;
-		}
-		//		long millisCount = duration - dayCount * 1000 * 60 * 60 * 24
-		//				- hourCount * 1000 * 60 * 60 - minCount * 1000 * 60 - secCount
-		//				* 1000;
-
-		String result = "";
-		if (dayCount > 0)
-			result += dayCount + "d";
-		if (hourCount > 0)
-			result += hourCount + "h";
-		if (minCount < 10 && hourCount > 0) {
-			result += "0";
-		}
-		result += minCount + "'";
-		if (secCount < 10) {
-			result += "0";
-		}
-		result += secCount + "''";
-		return result;
-	}
-
-	protected static String loadDefaultedParamValue(
+	public static String loadDefaultedParamValue(
 			Map<String, String> parameters, String paramName,
 			String defaultParamValue) {
 		String result = parameters.get(paramName);
@@ -142,7 +74,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 			return parameters.get(paramName);
 	}
 
-	protected static double parseDoubleParam(String paramValue, double minExcl,
+	public static double parseDoubleParam(String paramValue, double minExcl,
 			double maxIncl) throws MacroExecutionException {
 		double result;
 		try {
@@ -152,16 +84,41 @@ public abstract class StatusLightBasedMacro implements Macro {
 					+ paramValue + "' is not a decimal value"); //$NON-NLS-1$
 		}
 
-		if (result <= minExcl || result > maxIncl) {
+		if (result <= minExcl) {
 			throw new MacroExecutionException("Wrong value: the parameter '" //$NON-NLS-1$
-					+ paramValue + "' is out of the expected range " + minExcl //$NON-NLS-1$
-					+ "-" + maxIncl); //$NON-NLS-1$
+					+ paramValue + "' must be > " + minExcl); //$NON-NLS-1$
+		}
+		if (result > maxIncl) {
+			throw new MacroExecutionException("Wrong value: the parameter '" //$NON-NLS-1$
+					+ paramValue + "' must be <= " + maxIncl); //$NON-NLS-1$
 		}
 
 		return result;
 	}
 
-	protected FriendlyDateFormatter newFriendlyDateFormatter() {
+	public static long parseLongParam(String paramValue, long minExcl,
+			long maxIncl) throws MacroExecutionException {
+		long result;
+		try {
+			result = Long.parseLong(paramValue);
+		} catch (NumberFormatException e) {
+			throw new MacroExecutionException("Wrong format: the parameter '" //$NON-NLS-1$
+					+ paramValue + "' is not a long value"); //$NON-NLS-1$
+		}
+
+		if (result <= minExcl) {
+			throw new MacroExecutionException("Wrong value: the parameter '" //$NON-NLS-1$
+					+ paramValue + "' must be > " + minExcl); //$NON-NLS-1$
+		}
+		if (result > maxIncl) {
+			throw new MacroExecutionException("Wrong value: the parameter '" //$NON-NLS-1$
+					+ paramValue + "' must be <= " + maxIncl); //$NON-NLS-1$
+		}
+
+		return result;
+	}
+
+	public FriendlyDateFormatter newFriendlyDateFormatter() {
 		// Get current user's timezone, or default one
 		User authUser = AuthenticatedUserThreadLocal.getUser();
 		TimeZone timeZone;
@@ -183,7 +140,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 		return friendlyDateFormatter;
 	}
 
-	protected NumberFormat newNumberFormatter() {
+	public static NumberFormat newNumberFormatter() {
 		// Get current user's timezone, or default one
 		/*
 		User authUser = AuthenticatedUserThreadLocal.getUser();
@@ -215,20 +172,4 @@ public abstract class StatusLightBasedMacro implements Macro {
 		return result;
 	}
 
-	protected String computeTestInfo(StatusLightData slData) {
-		NumberFormat numberFormatter = newNumberFormatter();
-		String testInfo = numberFormatter.format(slData.getTestPassCount());
-		if (slData.getTestTotalCount() > 0) {
-			testInfo += "/"
-					+ numberFormatter.format(slData.getTestTotalCount());
-		}
-		if (slData.getTestTotalCount() <= 1) {
-			testInfo += " test"; //$NON-NLS-1$
-		} else {
-			testInfo += " tests (" //$NON-NLS-1$ //$NON-NLS-2$
-					+ newPercentFormatter().format(slData.calcSuccessRatio())
-					+ ")"; //$NON-NLS-1$
-		}
-		return testInfo;
-	}
 }

@@ -1,0 +1,40 @@
+#requireResource("com.baloise.confluence.dashboard-plus:dplus-speedometer-resources")
+<script type="text/javascript">
+##	google.setOnLoadCallback(function() {
+##	  createAndDrawChart('chart_div123', 'http://localhost:7474',
+##	    'MATCH (scn:SessionCount) RETURN \'Counter\'+scn.maxEverValue as label, scn.currentValue as value, 0 as min, scn.maxEverValue as max, 10 as minorTicks ORDER BY value DESC',
+##	    5000, { /*width: 300, */
+##	      height: 200,
+##	      animation: {
+##	        duration: 3000,
+##	        easing: 'linear'
+##	      }
+##	    }
+##	  );
+##	});
+	google.setOnLoadCallback(function() {
+	  createAndDrawChart('chart_div${someID}', '${neo4jURL}',
+	    '${cypher}',
+	    ${refreshIntervalInMillis}, {
+	      #if( ${widthPixel} && ${widthPixel} != "" )
+	        width: ${widthPixel},
+	      #end
+	      height: ${heightPixel},
+	      animation: {
+	        duration: ${animDurationInMillis},
+	        easing: '${animEasingStyle}'
+	      }
+	    }
+	  );
+	});
+</script>
+
+<div id="chart_div${someID}" style="height: ${heightPixel}px; 
+#if ( ${hyperlinkURL} && ${hyperlinkURL} != "" )
+  cursor: pointer;
+#end
+" title="${tooltipText}"
+#if ( ${hyperlinkURL} && ${hyperlinkURL} != "" )
+  onclick="javascript: window.open('${hyperlinkURL}', '${hyperlinkTarget}');"
+#end
+></div>

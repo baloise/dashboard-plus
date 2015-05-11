@@ -1,6 +1,6 @@
 package com.baloise.confluence.dashboardplus;
 
-import com.baloise.confluence.dashboardplus.StatusLightBasedMacro.StatusColor;
+import com.baloise.confluence.dashboardplus.AbstractStatusLightBasedMacro.StatusColor;
 
 public class StatusLightData {
 

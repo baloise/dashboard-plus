@@ -19,7 +19,7 @@ import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableExceptio
 import com.baloise.confluence.dashboardplus.sonar.SonarService;
 import com.baloise.confluence.dashboardplus.sonar.bean.SonarData;
 
-public class SonarTestStatusMacro extends StatusLightBasedMacro {
+public class SonarTestStatusMacro extends AbstractStatusLightBasedMacro {
 
 	private static final String MACRO_PARAM_NAME_HOST = "host"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_RESOURCEID = "resourceId"; //$NON-NLS-1$

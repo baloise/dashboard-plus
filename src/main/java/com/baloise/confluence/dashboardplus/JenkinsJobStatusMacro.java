@@ -24,7 +24,7 @@ import com.offbytwo.jenkins.model.TestReport;
 import com.offbytwo.jenkins.model.TestReportSuite;
 import com.offbytwo.jenkins.model.TestReportSuiteCase;
 
-public class JenkinsJobStatusMacro extends StatusLightBasedMacro {
+public class JenkinsJobStatusMacro extends AbstractStatusLightBasedMacro {
 
 	private static final String MACRO_PARAM_NAME_HOST = "host"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_JOBNAME = "jobName"; //$NON-NLS-1$

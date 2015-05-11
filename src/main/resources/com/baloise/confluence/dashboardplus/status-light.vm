@@ -1,4 +1,4 @@
-#requireResource("com.baloise.confluence.dashboard-plus:dashboard-plus-resources")
+#requireResource("com.baloise.confluence.dashboard-plus:dplus-light-resources")
 <div style="text-align: center;">
 <div class="dplus-text">
 	#if ( ${hyperlinkURL} && ${hyperlinkURL} != "" )

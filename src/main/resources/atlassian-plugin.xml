@@ -80,20 +80,44 @@
 			<parameter name="fontSize" type="string"/>
 		</parameters>
 	</xhtml-macro>
+	<xhtml-macro name="neo4j-speedometer" class="com.baloise.confluence.dashboardplus.Neo4jSpeedometerMacro"
+		key="neo4j-speedometer"
+		icon="/download/resources/${project.groupId}.${project.artifactId}/images/neo4jSpeedometerIcon.png">
+		<category name="visuals" />
+		<parameters>
+			<parameter name="host" type="string" required="true"/>
+			<parameter name="cypher" type="string" required="true"/>
+			<parameter name="widthPixel" type="string"/>
+			<parameter name="heightPixel" type="string" required="true" default="200"/>
+			<parameter name="tooltipText" type="string"/>
+			<parameter name="refreshIntervalInMillis" type="string" required="true" default="0"/>
+			<parameter name="animDurationInMillis" type="string" required="true" default="1000"/>
+			<parameter name="animEasingStyle" type="enum" required="true" default="linear">
+				<value name="linear"/>
+				<value name="in"/>
+				<value name="out"/>
+				<value name="inAndOut"/>
+			</parameter>
+			<parameter name="hyperlinkURL" type="string"/>
+			<parameter name="hyperlinkTarget" type="string" default="_blank"/>
+		</parameters>
+	</xhtml-macro>
 
 	<!-- add our i18n resource -->
 	<resource type="i18n" name="i18n" location="dashboard-plus" />
 	<resource type="download" name="images/" location="/images" />
 
 	<!-- add our web resources -->
-	<web-resource key="dashboard-plus-resources" name="dashboard-plus Web Resources">
+    <web-resource key="dplus-light-resources" name="dashboard-plus light Web Resources">
 		<dependency>com.atlassian.auiplugin:ajs</dependency>
-
-		<resource type="download" name="dashboard-plus.css" location="/css/dashboard-plus.css" />
-		<resource type="download" name="dashboard-plus.js" location="/js/dashboard-plus.js" />
+		<resource type="download" name="dplus-light.css" location="/css/dplus-light.css" />
 		<resource type="download" name="images/" location="/images" />
-
-		<context>dashboard-plus</context>
+	</web-resource>
+	<web-resource key="dplus-speedometer-resources" name="dashboard-plus speedometer Web Resources">
+		<dependency>com.atlassian.auiplugin:ajs</dependency>
+		<resource type="download" name="google-jsapi.js" location="/js/google-jsapi.js" />
+		<resource type="download" name="dplus-neo4j-speedometer.js" location="/js/dplus-neo4j-speedometer.js" />
+		<resource type="download" name="images/" location="/images" />
 	</web-resource>
 
 	<!-- publish our component -->
