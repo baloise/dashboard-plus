@@ -3,15 +3,17 @@
     });
 
     function createAndDrawChart(chartDivId, neo4jUrl, cypher, refreshIntervalInMillis, options) {
+      var cypherClean = cypher.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    	
       var chart = new google.visualization.Gauge(document.getElementById(chartDivId));
       var data = new google.visualization.DataTable();
       var timer = null;
       if (refreshIntervalInMillis > 0) {
         timer = setInterval(function() {
-          drawChart(chart, data, neo4jUrl, cypher, timer, options);
+          drawChart(chart, data, neo4jUrl, cypherClean, timer, options);
         }, refreshIntervalInMillis);
       }
-      drawChart(chart, data, neo4jUrl, cypher, timer, options);
+      drawChart(chart, data, neo4jUrl, cypherClean, timer, options);
     }
 
     function drawChart(chart, data, neo4jUrl, cypher, timer, options) {
