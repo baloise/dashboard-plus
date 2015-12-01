@@ -1,0 +1,42 @@
+<xs:schema attributeFormDefault="unqualified"
+	elementFormDefault="qualified"
+	targetNamespace="http://www.baloise.com/confluence/dashboardplus/jira/config"
+	xmlns:tns="http://www.baloise.com/confluence/dashboardplus/jira/config"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="jiraEvalSpec">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="defaultProjectSpec">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="issueTypeSpec" maxOccurs="unbounded"
+								minOccurs="1" type="tns:issueTypeSpecType" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="specificProjectSpec" minOccurs="0"
+					maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="issueTypeSpec" maxOccurs="unbounded"
+								minOccurs="1" type="tns:issueTypeSpecType" />
+						</xs:sequence>
+						<xs:attribute type="xs:string" name="projectKey" use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="issueTypeSpecType">
+		<xs:sequence>
+			<xs:element type="xs:string" name="fieldId" />
+			<xs:element type="xs:string" name="fieldValueAssociatedWithSucceeded"
+				maxOccurs="unbounded" minOccurs="1" />
+			<xs:element type="xs:string" name="fieldValueAssociatedWithFailed"
+				maxOccurs="unbounded" minOccurs="1" />
+			<xs:element type="xs:string" name="fieldValueAssociatedWithSkipped"
+				maxOccurs="unbounded" minOccurs="0" />
+		</xs:sequence>
+		<xs:attribute type="xs:string" name="issueTypeName" use="required" />
+	</xs:complexType>
+</xs:schema>

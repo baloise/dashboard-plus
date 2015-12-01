@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:jiraEvalSpec
+	xmlns:tns="http://www.baloise.com/confluence/dashboardplus/jira/config"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.baloise.com/confluence/dashboardplus/jira/config JiraEvalSpec.xsd ">
+	<tns:defaultProjectSpec>
+		<tns:issueTypeSpec issueTypeName="Requirement">
+			<tns:fieldId>cf[11150]</tns:fieldId>
+			<tns:fieldValueAssociatedWithSucceeded>Done</tns:fieldValueAssociatedWithSucceeded>
+			<tns:fieldValueAssociatedWithFailed>Failed</tns:fieldValueAssociatedWithFailed>
+			<tns:fieldValueAssociatedWithSkipped>Wont be done</tns:fieldValueAssociatedWithSkipped>
+			<tns:fieldValueAssociatedWithSkipped>In Progress</tns:fieldValueAssociatedWithSkipped>
+		</tns:issueTypeSpec>
+		<tns:issueTypeSpec issueTypeName="Sub Testcase">
+			<tns:fieldId>cf[12850]</tns:fieldId>
+			<tns:fieldValueAssociatedWithSucceeded>OK</tns:fieldValueAssociatedWithSucceeded>
+			<tns:fieldValueAssociatedWithFailed>NOK</tns:fieldValueAssociatedWithFailed>
+			<tns:fieldValueAssociatedWithSkipped>SKIPPED</tns:fieldValueAssociatedWithSkipped>
+		</tns:issueTypeSpec>
+		<tns:issueTypeSpec issueTypeName="Test">
+			<tns:fieldId>cf[11152]</tns:fieldId>
+			<tns:fieldValueAssociatedWithSucceeded>PASSED</tns:fieldValueAssociatedWithSucceeded>
+			<tns:fieldValueAssociatedWithFailed>ERROR</tns:fieldValueAssociatedWithFailed>
+			<tns:fieldValueAssociatedWithSkipped>SKIPPED</tns:fieldValueAssociatedWithSkipped>
+		</tns:issueTypeSpec>
+	</tns:defaultProjectSpec>
+	<tns:specificProjectSpec projectKey="GALRE">
+		<tns:issueTypeSpec issueTypeName="Test">
+			<tns:fieldId>cf[11152]</tns:fieldId>
+			<tns:fieldValueAssociatedWithSucceeded>PASSED</tns:fieldValueAssociatedWithSucceeded>
+			<tns:fieldValueAssociatedWithSucceeded>OK</tns:fieldValueAssociatedWithSucceeded>
+			<tns:fieldValueAssociatedWithFailed>ERROR</tns:fieldValueAssociatedWithFailed>
+			<tns:fieldValueAssociatedWithSkipped>SKIPPED</tns:fieldValueAssociatedWithSkipped>
+		</tns:issueTypeSpec>
+	</tns:specificProjectSpec>
+</tns:jiraEvalSpec>

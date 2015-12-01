@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.2" icons="true" automaticImage="PNG" always-add-relationships="true" generalizations="true" 
+  realizations="true" associations="true" dependencies="true" nesting-relationships="true">  
+  <class id="1" language="java" name="com.baloise.confluence.dashboardplus.jira.config.gen.IssueTypeSpecType" 
+    project="dashboard-plus" 
+    file="/dashboard-plus/src/main/java/com/baloise/confluence/dashboardplus/jira/config/gen/IssueTypeSpecType.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="297" width="289" x="187" y="405"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="2" language="java" 
+    name="com.baloise.confluence.dashboardplus.jira.config.gen.JiraEvalSpec.DefaultProjectSpec" project="dashboard-plus" 
+    file="/dashboard-plus/src/main/java/com/baloise/confluence/dashboardplus/jira/config/gen/JiraEvalSpec.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="99" width="252" x="41" y="212"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" 
+    name="com.baloise.confluence.dashboardplus.jira.config.gen.JiraEvalSpec.SpecificProjectSpec" 
+    project="dashboard-plus" 
+    file="/dashboard-plus/src/main/java/com/baloise/confluence/dashboardplus/jira/config/gen/JiraEvalSpec.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="153" width="252" x="333" y="212"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="com.baloise.confluence.dashboardplus.jira.config.gen.JiraEvalSpec" 
+    project="dashboard-plus" 
+    file="/dashboard-plus/src/main/java/com/baloise/confluence/dashboardplus/jira/config/gen/JiraEvalSpec.java" 
+    binary="false" corner="BOTTOM_RIGHT">    
+    <position height="135" width="275" x="187" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" accessors="true" 
+      visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <association id="5">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="6" name="defaultProjectSpec"/>      
+      <multiplicity id="7" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="8">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="9" name="issueTypeSpec"/>      
+      <multiplicity id="10" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="11">    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="12" name="issueTypeSpec"/>      
+      <multiplicity id="13" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="1" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="14">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="2"/>  
+  </nesting>  
+  <nesting id="15">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="3"/>  
+  </nesting>  
+  <association id="16">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="17" name="specificProjectSpec"/>      
+      <multiplicity id="18" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="true" signature="true" 
+    accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
