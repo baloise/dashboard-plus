@@ -21,17 +21,17 @@ public class StaticStatusLightMacro extends AbstractStatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_APPLYOUTLINESTYLE = "applyOutlineStyle";
 	private static final String MACRO_PARAM_NAME_FONTSIZE = "fontSize";
 
-	private static final String MACRO_PARAM_DEFAULT_LABEL = Default
+	private static final String MACRO_PARAM_DEFAULT_LABEL = DefaultHelper
 			.getString("StaticStatusLightMacro.label"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_COLOR = Default
+	private static final String MACRO_PARAM_DEFAULT_COLOR = DefaultHelper
 			.getString("StaticStatusLightMacro.color"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = Default
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = DefaultHelper
 			.getString("StaticStatusLightMacro.hyperlinkURL"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = Default
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = DefaultHelper
 			.getString("StaticStatusLightMacro.hyperlinkTarget"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = Default
+	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = DefaultHelper
 			.getString("StaticStatusLightMacro.applyOutlineStyle"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = Default
+	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = DefaultHelper
 			.getString("StaticStatusLightMacro.fontSize"); //$NON-NLS-1$
 
 	public StaticStatusLightMacro(/* XhtmlContent xhtmlUtils, */

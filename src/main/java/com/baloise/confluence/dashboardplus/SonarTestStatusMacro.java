@@ -35,31 +35,31 @@ public class SonarTestStatusMacro extends AbstractStatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_APPLYOUTLINESTYLE = "applyOutlineStyle";
 	private static final String MACRO_PARAM_NAME_FONTSIZE = "fontSize";
 
-	private static final String MACRO_PARAM_DEFAULT_HOST = Default
+	private static final String MACRO_PARAM_DEFAULT_HOST = DefaultHelper
 			.getString("SonarTestStatusMacro.host"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_RESOURCEID = Default
+	private static final String MACRO_PARAM_DEFAULT_RESOURCEID = DefaultHelper
 			.getString("SonarTestStatusMacro.resourceId"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_LABEL = Default
+	private static final String MACRO_PARAM_DEFAULT_LABEL = DefaultHelper
 			.getString("SonarTestStatusMacro.label"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_SIMPLETHRESHOLDMODEL = Default
+	private static final String MACRO_PARAM_DEFAULT_SIMPLETHRESHOLDMODEL = DefaultHelper
 			.getString("SonarTestStatusMacro.simpleThresholdModel"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = Default
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = DefaultHelper
 			.getString("SonarTestStatusMacro.threshold1"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = Default
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = DefaultHelper
 			.getString("SonarTestStatusMacro.threshold2"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_PERIOD = Default
+	private static final String MACRO_PARAM_DEFAULT_PERIOD = DefaultHelper
 			.getString("SonarTestStatusMacro.period"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = Default
+	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = DefaultHelper
 			.getString("SonarTestStatusMacro.showDetails"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = Default
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = DefaultHelper
 			.getString("SonarTestStatusMacro.hyperlinkURL"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS = Default
+	private static final String MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS = DefaultHelper
 			.getString("SonarTestStatusMacro.inclSkippedTests"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = Default
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = DefaultHelper
 			.getString("SonarTestStatusMacro.hyperlinkTarget"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = Default
+	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = DefaultHelper
 			.getString("SonarTestStatusMacro.applyOutlineStyle"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = Default
+	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = DefaultHelper
 			.getString("SonarTestStatusMacro.fontSize"); //$NON-NLS-1$
 
 	public SonarTestStatusMacro(/* XhtmlContent xhtmlUtils, */

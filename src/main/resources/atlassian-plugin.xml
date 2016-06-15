@@ -120,14 +120,34 @@
 		<resource type="download" name="images/" location="/images" />
 	</web-resource>
 
-	<!-- publish our component -->
-	<!-- <component key="myPluginComponent" class="com.baloise.confluence.dashboardplus.MyPluginComponentImpl" 
-		public="true"> <interface>com.baloise.confluence.dashboardplus.MyPluginComponent</interface> 
-		</component> -->
-
 	<!-- import from the product container -->
 	<component-import key="applicationProperties"
 		interface="com.atlassian.sal.api.ApplicationProperties" />
 	<component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver"/>
+
+	<component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager" />
+	<component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider" />
+	<component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer" />
+	<component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
+	<component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate" />
+
+	<servlet key="config-servlet" class="com.baloise.confluence.dashboardplus.ui.PluginConfigServlet">
+	  <url-pattern>/dashboard-plus/config</url-pattern>
+	</servlet>
+	
+	<web-resource key="dplus-config-resources" name="dashboard-plus Configuration Web Resources"> 
+	  <dependency>com.atlassian.auiplugin:ajs</dependency> 
+	  <resource type="download" name="dplus-config.js" location="/js/dplus-config.js"/> 
+	</web-resource>
+	
+	<rest key="rest" path="/dashboard-plus" version="1.0">
+		<description>Provides REST resources for the plugin (e.g. config UI).</description>
+	</rest>
+	
+	<web-item key="plugin-config-menu-item" name="dashboard-plus Config" section="system.admin/configuration" weight="1000"> 
+	  <description>Link to plugin config page.</description> 
+	  <label key="com.baloise.confluence.dashboard-plus.config.menu-item.label" /> 
+	  <link linkId="dplus-config-link">/plugins/servlet/dashboard-plus/config</link> 
+	</web-item>
 
 </atlassian-plugin>

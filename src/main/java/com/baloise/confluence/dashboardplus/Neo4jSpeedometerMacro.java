@@ -27,25 +27,25 @@ public class Neo4jSpeedometerMacro extends AbstractDPlusMacro {
 	private static final String MACRO_PARAM_NAME_HYPERLINKURL = "hyperlinkURL"; //$NON-NLS-1$
 	private static final String MACRO_PARAM_NAME_HYPERLINKTARGET = "hyperlinkTarget";
 
-	private static final String MACRO_PARAM_DEFAULT_HOST = Default
+	private static final String MACRO_PARAM_DEFAULT_HOST = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.host"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_CYPHER = Default
+	private static final String MACRO_PARAM_DEFAULT_CYPHER = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.cypher"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_WIDTHPIXEL = Default
+	private static final String MACRO_PARAM_DEFAULT_WIDTHPIXEL = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.widthPixel"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HEIGHTPIXEL = Default
+	private static final String MACRO_PARAM_DEFAULT_HEIGHTPIXEL = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.heightPixel"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_TOOLTIPTEXT = Default
+	private static final String MACRO_PARAM_DEFAULT_TOOLTIPTEXT = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.tooltipText"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_REFRESHINTERVALINMILLIS = Default
+	private static final String MACRO_PARAM_DEFAULT_REFRESHINTERVALINMILLIS = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.refreshIntervalInMillis"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_ANIMDURATIONINMILLIS = Default
+	private static final String MACRO_PARAM_DEFAULT_ANIMDURATIONINMILLIS = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.animDurationInMillis"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_ANIMEASINGSTYLE = Default
+	private static final String MACRO_PARAM_DEFAULT_ANIMEASINGSTYLE = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.animEasingStyle"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = Default
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.hyperlinkURL"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = Default
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = DefaultHelper
 			.getString("Neo4jSpeedometerMacro.hyperlinkTarget"); //$NON-NLS-1$
 
 	public Neo4jSpeedometerMacro(Renderer renderer, UserAccessor userAccessor,

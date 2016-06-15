@@ -57,6 +57,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.atlassian.templaterenderer</groupId>
+			<artifactId>atlassian-template-renderer-api</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>jsr311-api</artifactId>
 			<version>1.1.1</version>
@@ -91,6 +97,25 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>com.atlassian.maven.plugins</groupId>
+					<artifactId>maven-confluence-plugin</artifactId>
+					<executions>
+						<execution>
+							<goals>
+								<goal>compress-resources</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<compressResources>false</compressResources>
+						<log4jProperties>src/main/resources/log4j.properties</log4jProperties>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<properties>

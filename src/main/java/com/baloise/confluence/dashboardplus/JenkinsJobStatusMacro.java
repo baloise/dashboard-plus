@@ -42,35 +42,35 @@ public class JenkinsJobStatusMacro extends AbstractStatusLightBasedMacro {
 	private static final String MACRO_PARAM_NAME_SHOWFAILEDTESTDETAILSASTOOLTIP = "showFailedTestDetailsAsTooltip";
 	private static final String MACRO_PARAM_NAME_FONTSIZE = "fontSize";
 
-	private static final String MACRO_PARAM_DEFAULT_HOST = Default
+	private static final String MACRO_PARAM_DEFAULT_HOST = DefaultHelper
 			.getString("JenkinsJobStatusMacro.host"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_JOBNAME = Default
+	private static final String MACRO_PARAM_DEFAULT_JOBNAME = DefaultHelper
 			.getString("JenkinsJobStatusMacro.jobName"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_LABEL = Default
+	private static final String MACRO_PARAM_DEFAULT_LABEL = DefaultHelper
 			.getString("JenkinsJobStatusMacro.label"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_PERIOD = Default
+	private static final String MACRO_PARAM_DEFAULT_PERIOD = DefaultHelper
 			.getString("JenkinsJobStatusMacro.period"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = Default
+	private static final String MACRO_PARAM_DEFAULT_SHOWDETAILS = DefaultHelper
 			.getString("JenkinsJobStatusMacro.showDetails"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_DOESREFLECTTEST = Default
+	private static final String MACRO_PARAM_DEFAULT_DOESREFLECTTEST = DefaultHelper
 			.getString("JenkinsJobStatusMacro.doesReflectTest"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_SIMPLETHRESHOLDMODEL = Default
+	private static final String MACRO_PARAM_DEFAULT_SIMPLETHRESHOLDMODEL = DefaultHelper
 			.getString("JenkinsJobStatusMacro.simpleThresholdModel"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = Default
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD1 = DefaultHelper
 			.getString("JenkinsJobStatusMacro.threshold1"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = Default
+	private static final String MACRO_PARAM_DEFAULT_THRESHOLD2 = DefaultHelper
 			.getString("JenkinsJobStatusMacro.threshold2"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = Default
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKURL = DefaultHelper
 			.getString("JenkinsJobStatusMacro.hyperlinkURL"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS = Default
+	private static final String MACRO_PARAM_DEFAULT_INCLSKIPPEDTESTS = DefaultHelper
 			.getString("JenkinsJobStatusMacro.inclSkippedTests"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = Default
+	private static final String MACRO_PARAM_DEFAULT_HYPERLINKTARGET = DefaultHelper
 			.getString("JenkinsJobStatusMacro.hyperlinkTarget"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = Default
+	private static final String MACRO_PARAM_DEFAULT_APPLYOUTLINESTYLE = DefaultHelper
 			.getString("JenkinsJobStatusMacro.applyOutlineStyle"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_SHOWFAILEDTESTDETAILSASTOOLTIP = Default
+	private static final String MACRO_PARAM_DEFAULT_SHOWFAILEDTESTDETAILSASTOOLTIP = DefaultHelper
 			.getString("JenkinsJobStatusMacro.showFailedTestDetailsAsTooltip"); //$NON-NLS-1$
-	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = Default
+	private static final String MACRO_PARAM_DEFAULT_FONTSIZE = DefaultHelper
 			.getString("JenkinsJobStatusMacro.fontSize"); //$NON-NLS-1$
 
 	/* Automatically injected spring components */
