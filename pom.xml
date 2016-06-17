@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.baloise.confluence</groupId>
 	<artifactId>dashboard-plus</artifactId>
-	<version>1.2.12</version>
+	<version>1.2.13</version>
 
 	<organization>
 		<name>Basler Versicherungen</name>
@@ -16,6 +16,16 @@
 	<name>dashboard-plus</name>
 	<description>The Dashboard+ plugin for Confluence provides macros to visualize status information from Sonar and Jenkins</description>
 	<packaging>atlassian-plugin</packaging>
+
+	<properties>
+		<confluence.version>5.10.0</confluence.version>
+		<confluence.data.version>5.10.0</confluence.data.version>
+		<!--amps.version>5.0.3</amps.version -->
+		<amps.version>5.1.2</amps.version>
+		<!--amps.version>6.2.1</amps.version -->
+		<!-- <amps.version>6.2.4</amps.version> -->
+		<plugin.testrunner.version>1.2.3</plugin.testrunner.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -103,14 +113,45 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<!-- <pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.10</version>
+					<executions>
+						<execution>
+							<id>unpack</id>
+							<phase>package</phase>
+							<goals>
+								<goal>unpack</goal>
+							</goals>
+							<configuration>
+								<artifactItems>
+									<artifactItem>
+										<groupId>com.offbytwo.jenkins</groupId>
+										<artifactId>jenkins-client</artifactId>
+										<version>0.3.0</version>
+										<type>jar</type>
+										<overWrite>false</overWrite>
+										<outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+										<destFileName>optional-new-name.jar</destFileName>
+										<includes>**/*.class,**/*.xml</includes>
+										<excludes>**/*Build.class</excludes>
+									</artifactItem>
+								</artifactItems>
+								<includes>**/*.java</includes>
+								<excludes>**/*.properties</excludes>
+								<outputDirectory>${project.build.directory}/wars</outputDirectory>
+								<overWriteReleases>false</overWriteReleases>
+								<overWriteSnapshots>true</overWriteSnapshots>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement> -->
 	</build>
-
-	<properties>
-		<confluence.version>5.10.0</confluence.version>
-		<confluence.data.version>5.10.0</confluence.data.version>
-		<amps.version>5.1.2</amps.version>
-		<plugin.testrunner.version>1.2.3</plugin.testrunner.version>
-	</properties>
 
 	<repositories>
 		<repository>
@@ -140,6 +181,7 @@
 			<url>http://baloise.github.io/sun-m2</url>
 		</repository>
 	</repositories>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<releases>
@@ -155,7 +197,5 @@
 			<url>https://maven.atlassian.com/repository/public</url>
 		</pluginRepository>
 	</pluginRepositories>
-
-
 
 </project>
