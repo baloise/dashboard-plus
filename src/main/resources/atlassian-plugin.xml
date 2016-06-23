@@ -18,8 +18,8 @@
 		icon="/download/resources/${project.groupId}.${project.artifactId}/images/sonarStatusIcon.png">
 		<category name="visuals" />
 		<parameters>
-			<parameter name="host" type="string" required="true" default="https://analysis.apache.org"/>
-			<parameter name="resourceId" type="string" required="true" default="org.apache.cxf:cxf">
+			<parameter name="host" type="string" required="true" default="http://itq.balgroupit.com/sonar"/>
+			<parameter name="resourceId" type="string" required="true" default="ch.baloise.testing.st:gwpc-st-TEST">
 				<option key="showNameInPlaceholder" value="false" />
             	<option key="showValueInPlaceholder" value="true" />
             </parameter>
@@ -41,8 +41,8 @@
 		icon="/download/resources/${project.groupId}.${project.artifactId}/images/jenkinsStatusIcon.png">
 		<category name="visuals" />
 		<parameters>
-			<parameter name="host" type="string" required="true" default="https://builds.apache.org"/>
-			<parameter name="jobName" type="string" required="true" default="OpenNLP">
+			<parameter name="host" type="string" required="true" default="http://jenkins-ch.balgroupit.com:8080"/>
+			<parameter name="jobName" type="string" required="true" default="PolicyCenter_CI">
 				<option key="showNameInPlaceholder" value="false" />
             	<option key="showValueInPlaceholder" value="true" />
             </parameter>
