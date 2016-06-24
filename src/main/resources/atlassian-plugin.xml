@@ -103,6 +103,24 @@
 			<parameter name="hyperlinkTarget" type="string" default="_blank"/>
 		</parameters>
 	</xhtml-macro>
+	<xhtml-macro name="neo4j-test-status-baloise" class="com.baloise.confluence.dashboardplus.Neo4jTestStatusBaloiseMacro"
+		key="neo4j-test-status-baloise"
+		icon="/download/resources/${project.groupId}.${project.artifactId}/images/neo4jTestStatusBaloiseIcon.png">
+		<category name="visuals" />
+		<parameters>
+			<parameter name="runnames" type="string" required="true" default="">
+				<option key="showNameInPlaceholder" value="false" />
+				<option key="showValueInPlaceholder" value="true" />
+			</parameter>
+			<parameter name="criterias" type="string" default="">
+				<option key="showNameInPlaceholder" value="false" />
+				<option key="showValueInPlaceholder" value="true" />
+			</parameter>
+			<parameter name="greenifequalorabove" type="string" default="100.0"/>
+			<parameter name="redifequalorbelow" type="string" default="99.9"/>
+			<parameter name="label" type="string" default=""/>
+		</parameters>
+	</xhtml-macro>
 
 	<!-- add our i18n resource -->
 	<resource type="i18n" name="i18n" location="dashboard-plus" />
