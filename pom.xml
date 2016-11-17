@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.baloise.confluence</groupId>
 	<artifactId>dashboard-plus</artifactId>
-	<version>1.2.13</version>
+	<version>1.2.14</version>
 
 	<organization>
 		<name>Basler Versicherungen</name>
@@ -18,12 +18,9 @@
 	<packaging>atlassian-plugin</packaging>
 
 	<properties>
-		<confluence.version>5.10.0</confluence.version>
-		<confluence.data.version>5.10.0</confluence.data.version>
-		<!--amps.version>5.0.3</amps.version -->
-		<amps.version>5.1.2</amps.version>
-		<!--amps.version>6.2.1</amps.version -->
-		<!-- <amps.version>6.2.4</amps.version> -->
+		<confluence.version>6.0.1</confluence.version>
+		<confluence.data.version>6.0.1</confluence.data.version>
+		<amps.version>6.2.6</amps.version>
 		<plugin.testrunner.version>1.2.3</plugin.testrunner.version>
 	</properties>
 
