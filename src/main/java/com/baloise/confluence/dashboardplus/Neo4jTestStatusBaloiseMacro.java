@@ -29,10 +29,8 @@ public class Neo4jTestStatusBaloiseMacro extends AbstractDPlusMacro {
 		TestResult testResult = testResultEval.asTestResult();
 		String result;
 		if (testResult.status == Status.error) {
-			result = "Error occured while querying the Neo4j DB!";
-			if (testResult.error == null) {
-				result += "\nError message: " + testResult.error.getMessage();
-			}
+			result = testResult.error.getClass().getSimpleName() + ": "
+					+ testResult.error.getMessage();
 			if (testResultEval.getCypher() != null) {
 				result += "\nNeo4j Cypher: " + testResultEval.getCypher();
 			}

@@ -64,10 +64,6 @@ public class TestResultEvaluation {
 
 	}
 
-	private static TestResult error(Throwable e) {
-		return new TestResult(Status.error, e);
-	}
-
 	public static void main(String[] args) {
 		long time = System.currentTimeMillis();
 		System.out.println(new TestResultEvaluation("jirafilter_93607,local",
@@ -130,17 +126,17 @@ public class TestResultEvaluation {
 
 	public TestResult calculateTestResult() {
 		if (exception != null) {
-			return error(exception);
+			return new TestResult(Status.error, exception);
 		}
 		if (totalPassed < 0 | totalFailed < 0 | totalSkipped < 0) {
-			return error(new java.lang.AssertionError(
+			return new TestResult(Status.error, new java.lang.AssertionError(
 					"Some total value is less than 0"));
 		}
 		if (totalPassed == 0 & totalFailed == 0 & totalSkipped == 0) {
 			return new TestResult();
 		}
 		if (totalPassed == 0 & totalFailed == 0) {
-			return error(new java.lang.AssertionError(
+			return new TestResult(Status.error, new java.lang.AssertionError(
 					"Some total value does equal 0"));
 		}
 		Double passRate = new Double(totalPassed)
@@ -157,8 +153,8 @@ public class TestResultEvaluation {
 			return new TestResult(runs, Status.red, totalPassed, totalFailed,
 					totalSkipped, totalIgnored);
 		}
-		return error(new IllegalArgumentException("Evaluated pass rate = "
-				+ passRate));
+		return new TestResult(Status.error, new IllegalArgumentException(
+				"Evaluated pass rate = " + passRate));
 	}
 
 	public void calculateTotals() {
