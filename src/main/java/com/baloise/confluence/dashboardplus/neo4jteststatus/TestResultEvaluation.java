@@ -178,7 +178,7 @@ public class TestResultEvaluation {
 			for (String criteria : criterias) {
 				try {
 					String[] splittedCriteria = criteria.split("=");
-					cypher.add("MATCH tre-->(tt" + i + ":TestTag {key: '"
+					cypher.add("MATCH (tre)-->(tt" + i + ":TestTag {key: '"
 							+ splittedCriteria[0] + "', value: '"
 							+ splittedCriteria[1] + "'})");
 				} catch (Exception e) {
