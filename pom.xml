@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.baloise.confluence</groupId>
 	<artifactId>dashboard-plus</artifactId>
-	<version>1.4.2-baloise</version>
+	<version>1.4.3-baloise</version>
 
 	<organization>
 		<name>Basler Versicherungen</name>
@@ -28,6 +28,11 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.15</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

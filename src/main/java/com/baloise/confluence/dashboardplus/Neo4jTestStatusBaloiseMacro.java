@@ -62,6 +62,8 @@ public class Neo4jTestStatusBaloiseMacro extends AbstractDPlusMacro {
 			ConversionContext context) throws MacroExecutionException {
 		String runnames = getString(parameters.get("runnames"));
 		String criterias = getString(parameters.get("criterias"));
+		String from = getString(parameters.get("from"));
+    String until = getString(parameters.get("until"));
 		if (runnames.equalsIgnoreCase("debug")) {
 			return renderer.render(debug(criterias), context);
 		}
@@ -71,7 +73,7 @@ public class Neo4jTestStatusBaloiseMacro extends AbstractDPlusMacro {
 				parameters.get("redifequalorbelow"), 99.9) / 100.0;
 		try {
 			TestResultEvaluation tre = new TestResultEvaluation(runnames,
-					criterias, greenIfEqualOrAbove, redIfEqualOrBelow);
+					criterias, from, until, greenIfEqualOrAbove, redIfEqualOrBelow);
 			TestResult tr = tre.asTestResult();
 			String result = "";
 			String tooltip = createToolTip(tre);

@@ -116,6 +116,8 @@
 				<option key="showNameInPlaceholder" value="false" />
 				<option key="showValueInPlaceholder" value="true" />
 			</parameter>
+			<parameter name="from" type="string" default=""/>
+			<parameter name="until" type="string" default=""/>
 			<parameter name="greenifequalorabove" type="string" default="100.0"/>
 			<parameter name="redifequalorbelow" type="string" default="99.9"/>
 			<parameter name="label" type="string" default=""/>
