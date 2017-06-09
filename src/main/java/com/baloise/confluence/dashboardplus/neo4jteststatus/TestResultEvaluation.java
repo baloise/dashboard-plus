@@ -77,7 +77,7 @@ public class TestResultEvaluation {
     long time = System.currentTimeMillis();
     // System.out.println(new TestResultEvaluation("jirafilter_93607,local",
     // "teststage=unknown,service=unknown", "", "", 0.8, 0.3).asTestResult());
-    System.out.println(new TestResultEvaluation("some_run", "", "TODAY() - 10", "NOW() - 1.8", 0.8, 0.3).asTestResult());
+    System.out.println(new TestResultEvaluation("gwris-process-results", "", "TODAY() - 10", "NOW() - 1.8", 0.8, 0.3).asTestResult());
     System.out.println(System.currentTimeMillis() - time);
   }
 
