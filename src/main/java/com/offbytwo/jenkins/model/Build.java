@@ -53,7 +53,7 @@ public class Build extends BaseModel {
 	private static TestReport testReport(JenkinsHttpClient client, String url,
 			boolean recursiveChildLoading) throws IOException {
 		TestReport result = null;
-		result = client.get(JenkinsServer.encode(url + "/testReport"),
+		result = client.get(url + "/testReport",
 				TestReport.class);
 		result.setMissingValues();
 
