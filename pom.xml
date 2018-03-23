@@ -62,10 +62,7 @@
 		<dependency>
 			<groupId>com.offbytwo.jenkins</groupId>
 			<artifactId>jenkins-client</artifactId>
-			<!-- 
 			<version>0.3.7</version>
-			 -->
-			<version>0.3.0</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -138,7 +135,8 @@
 				</dependencies>
 			</plugin>
 		</plugins>
-		<!-- <pluginManagement>
+		<!-- 
+		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -175,7 +173,8 @@
 					</executions>
 				</plugin>
 			</plugins>
-		</pluginManagement> -->
+		</pluginManagement> 
+		-->
 	</build>
 
 	<repositories>
