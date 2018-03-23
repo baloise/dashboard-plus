@@ -14,6 +14,7 @@ import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.i18n.Message;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
+import com.atlassian.sal.api.timezone.TimeZoneManager;
 import com.baloise.confluence.dashboardplus.exception.ResourceNotFoundException;
 import com.baloise.confluence.dashboardplus.exception.ServiceUnavailableException;
 import com.baloise.confluence.dashboardplus.sonar.SonarService;
@@ -66,9 +67,9 @@ public class SonarTestStatusMacro extends StatusLightBasedMacro {
 	/* ApplicationLinkService applicationLinkService, */Renderer renderer,
 			UserAccessor userAccessor,
 			FormatSettingsManager formatSettingsManager,
-			LocaleManager localeManager, I18nResolver i18n) {
+			LocaleManager localeManager, TimeZoneManager timeZoneManager, I18nResolver i18n) {
 		super(renderer, userAccessor, formatSettingsManager, localeManager,
-				i18n);
+				timeZoneManager, i18n);
 	}
 
 	@Override
