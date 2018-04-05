@@ -13,3 +13,4 @@ Install via [marketplace.atlassian.com](https://marketplace.atlassian.com/plugin
 1. When using Eclipse generate project setup e.g. via `mvn org.apache.maven.plugins:maven-eclipse-plugin:2.8:eclipse -DdownloadSources=true`
 1. Check local compilability via `mvn clean verify`
 1. Launch IDE and start coding
+1. For IDE testing and runtime installation make sure to also install the [Atlassian SDK](https://developer.atlassian.com/server/framework/atlassian-sdk/set-up-the-atlassian-plugin-sdk-and-build-a-project/)
