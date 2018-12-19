@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.baloise.confluence</groupId>
 	<artifactId>dashboard-plus</artifactId>
-	<version>1.2.15</version>
+	<version>1.2.16</version>
 
 	<organization>
 		<name>Basler Versicherungen</name>
@@ -18,12 +18,14 @@
 	<packaging>atlassian-plugin</packaging>
 
 	<properties>
-		<java.version>1.8</java.version>
-		<confluence.version>6.2.3</confluence.version>
-		<confluence.data.version>6.2.3</confluence.data.version>
-		<amps.version>6.2.8</amps.version>
+        <confluence.version>6.12.0</confluence.version>
+        <confluence.data.version>6.12.0</confluence.data.version>
+        <amps.version>6.3.21</amps.version>
 		<plugin.testrunner.version>2.0.0</plugin.testrunner.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
 		<junit.jupiter.version>5.1.0</junit.jupiter.version>
 		<junit.platform.version>1.1.0</junit.platform.version>
 	</properties>
@@ -102,8 +104,6 @@
 				<configuration>
 					<productVersion>${confluence.version}</productVersion>
 					<productDataVersion>${confluence.data.version}</productDataVersion>
-					<!-- <instructions> <Import-Package> org.sonar.wsclient.*;version="2.11" 
-						</Import-Package> </instructions> -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -111,8 +111,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
 				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
 					<useIncrementalCompilation>false</useIncrementalCompilation>
 				</configuration>
 			</plugin>
