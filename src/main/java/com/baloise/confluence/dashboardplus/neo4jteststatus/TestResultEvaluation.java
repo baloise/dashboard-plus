@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
@@ -77,7 +78,8 @@ public class TestResultEvaluation {
     long time = System.currentTimeMillis();
     // System.out.println(new TestResultEvaluation("jirafilter_93607,local",
     // "teststage=unknown,service=unknown", "", "", 0.8, 0.3).asTestResult());
-    System.out.println(new TestResultEvaluation("gwris-process-results", "", "TODAY() - 10", "NOW() - 1.8", 0.8, 0.3).asTestResult());
+    System.out.println(
+        new TestResultEvaluation("gwris-process-results", "", "TODAY() - 10", "NOW() - 1.8", 0.8, 0.3).asTestResult());
     System.out.println(System.currentTimeMillis() - time);
   }
 
@@ -98,8 +100,9 @@ public class TestResultEvaluation {
   public long totalSkipped = 0;
   public long totalIgnored = 0;
 
+  private List<String> cypher = new ArrayList<String>();
+
   private Exception exception = null;
-  private List<String> cypher;
 
   public TestResultEvaluation(String runnames, String criterias, String from, String until, double greenIfEqualOrAbove,
       double redIfEqualOrBelow) {
@@ -137,6 +140,91 @@ public class TestResultEvaluation {
   public TestResult asTestResult() {
     calculateTotals();
     return calculateTestResult();
+  }
+
+  private String createToolTip(TestResult testResult) {
+    String result;
+    if (testResult.status == Status.error) {
+      result = testResult.error.getClass().getSimpleName() + ": "
+          + testResult.error.getMessage();
+      if (getCypher() != null) {
+        result += "\nNeo4j Cypher: " + getCypher();
+      }
+    } else if (testResult.status == Status.unknown) {
+      result = "The test status cannot be evaluated properly!";
+      if (getCypher() != null) {
+        result += "\nNeo4j Cypher: " + getCypher();
+      }
+      result += "\nPlease contact your test supporter.";
+      result += "\n";
+    } else {
+      String runs = "Runs: ";
+      for (String run : testResult.runs) {
+        runs = runs + run + ", ";
+      }
+      result = runs + "\nPassed: " + testResult.totalPassed
+          + ", Failed: " + testResult.totalFailed + ", Skipped: "
+          + testResult.totalSkipped + ", Ignored: "
+          + testResult.totalIgnored;
+    }
+    return result;
+  }
+
+
+  public String asConfluenceMarkup(String label) {
+    TestResult tr = asTestResult();
+
+    String result = "";
+    String tooltip = createToolTip(tr);
+    switch (tr.status) {
+    case unknown:
+      result = "question";
+      break;
+    case error:
+      result = "sad";
+      break;
+    case red:
+      result = "cross";
+      break;
+    case yellow:
+      result = "warning";
+      break;
+    case green:
+      result = "tick";
+      break;
+    case grey:
+      result = "light-off";
+      break;
+    case orange:
+      result = "light-on";
+      break;
+    default:
+      break;
+    }
+
+    if (!label.isEmpty()) {
+      label = " "
+          + label.replace(
+              "#t",
+              new Long(tr.totalPassed + tr.totalFailed
+                  + tr.totalIgnored + tr.totalSkipped)
+                  .toString())
+              .replace("#p",
+                  new Long(tr.totalPassed).toString())
+              .replace("#f",
+                  new Long(tr.totalFailed).toString())
+              .replace("#s",
+                  new Long(tr.totalSkipped).toString())
+              .replace("#i",
+                  new Long(tr.totalIgnored).toString());
+    }
+
+    String clCode = "<span style=\"font-size:0.8em\" title=\""
+        + StringEscapeUtils.escapeHtml4(tooltip)
+        + "\"><ac:emoticon ac:name=\"" + result + "\"/>"
+        + StringEscapeUtils.escapeHtml4(label) + "</span>";
+    
+    return clCode;
   }
 
   public TestResult calculateTestResult() {
@@ -248,6 +336,51 @@ public class TestResultEvaluation {
       cypherString = cypherString + " " + c;
     }
     return cypherString;
+  }
+
+  public String[] getSortedValuesFor(String key) {
+    Neo4JConnector neo4jConnector = new Neo4JConnector();
+    try {
+      runs = new Vector<String>();
+      String joinedRunnames = StringUtils.join(runnames, "', '");
+
+      cypher = new ArrayList<String>();
+      cypher.add("MATCH (tre:TestResult)<--(tru:TestRun)");
+      cypher.add("WHERE tru.runname IN ['" + joinedRunnames + "']");
+      if (!from.isEmpty()) {
+        cypher.add("AND tre.startedTime >= '" + getFormulaAsDateString(from) + "'");
+      }
+      if (!until.isEmpty()) {
+        cypher.add("AND tre.startedTime <= '" + getFormulaAsDateString(until) + "'");
+      }
+      int i = 0;
+      for (String criteria : criterias) {
+        try {
+          String[] splittedCriteria = criteria.split("=");
+          cypher.add("MATCH (tre)-->(tt" + i + ":TestTag {key: '" + splittedCriteria[0] + "', value: '"
+              + splittedCriteria[1] + "'})");
+        }
+        catch (Exception e) {}
+        i++;
+      }
+      cypher.add("MATCH (tre)-->(tt" + i + ":TestTag {key: '" + key + "'})");
+      cypher.add("RETURN DISTINCT tt" + i + ".value ORDER BY tt" + i + ".value");
+      String result = neo4jConnector.getResult(getCypher());
+
+      List<String> values = new ArrayList<String>();
+      JSONArray data = new JSONObject(result).getJSONArray("data");
+      for (int j = 0; j < data.length(); j++) {
+        values.add(data.getJSONArray(j).getString(0));
+      }
+      String[] returnValues = new String[values.size()];
+      return values.toArray(returnValues);
+    }
+
+    catch (Exception e) {
+      e.printStackTrace();
+      exception = e;
+    }
+    return new String[] {};
   }
 
 }
