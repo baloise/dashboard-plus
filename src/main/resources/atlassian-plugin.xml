@@ -121,6 +121,8 @@
 			<parameter name="greenifequalorabove" type="string" default="100.0"/>
 			<parameter name="redifequalorbelow" type="string" default="99.9"/>
 			<parameter name="label" type="string" default=""/>
+			<parameter name="xaxis" type="string" default=""/>
+			<parameter name="yaxis" type="string" default=""/>
 		</parameters>
 	</xhtml-macro>
 
