@@ -26,8 +26,8 @@ public class TestResultEvaluationTable {
   }
 
   public static void main(String[] args) {
-    System.out.println(new TestResultEvaluationTable("NLGW9Gpe1T,NLGW9Gpe4T", "", "", "", 0.99, 0.8, "stack", "gevo")
-        .asConfluenceMarkup("#t"));
+    System.out.println(new TestResultEvaluationTable("NLGW9Gpe1T,NLGW9Gpe4T,NLGW9Mpe1T,NLGW9Mpe4T",
+        "testtype=happyflow", "", "", 0.99, 0.8, "product", "gevo").asConfluenceMarkup("#t"));
   }
 
   public String asConfluenceMarkup(String label) {
@@ -44,7 +44,7 @@ public class TestResultEvaluationTable {
       for (String x : getXValues()) {
         result = result + "<td>";
         TestResultEvaluation tre = getTRE(x, y);
-        result = result + tre.asConfluenceMarkup(label);
+        result = result + tre.asConfluenceMarkup(label, true);
         result = result + "</td>";
       }
       result = result + "</tr>";
@@ -66,7 +66,9 @@ public class TestResultEvaluationTable {
 
   private TestResultEvaluation getTRE(String xValue, String yValue) {
     String additionalCriteria = xAxis + "=" + xValue + "," + yAxis + "=" + yValue;
-    return new TestResultEvaluation(runnames, criterias + additionalCriteria, from, until, greenIfEqualOrAbove,
-        redIfEqualOrBelow);
+    if (!criterias.isEmpty()) {
+      additionalCriteria = criterias + ',' + additionalCriteria;
+    }
+    return new TestResultEvaluation(runnames, additionalCriteria, from, until, greenIfEqualOrAbove, redIfEqualOrBelow);
   }
 }

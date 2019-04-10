@@ -170,10 +170,14 @@ public class TestResultEvaluation {
     return result;
   }
 
-
-  public String asConfluenceMarkup(String label) {
+  public String asConfluenceMarkup(String label, boolean emptyIfNoResults) {
     TestResult tr = asTestResult();
 
+    if (emptyIfNoResults) {
+      if (tr.status.equals(Status.unknown)) {
+        return "";
+      }
+    }
     String result = "";
     String tooltip = createToolTip(tr);
     switch (tr.status) {
@@ -225,6 +229,11 @@ public class TestResultEvaluation {
         + StringEscapeUtils.escapeHtml4(label) + "</span>";
     
     return clCode;
+  }
+
+
+  public String asConfluenceMarkup(String label) {
+    return asConfluenceMarkup(label, false);
   }
 
   public TestResult calculateTestResult() {
