@@ -79,7 +79,7 @@ public class TestResultEvaluation {
     // System.out.println(new TestResultEvaluation("jirafilter_93607,local",
     // "teststage=unknown,service=unknown", "", "", 0.8, 0.3).asTestResult());
     System.out.println(
-        new TestResultEvaluation("gwris-process-results", "", "TODAY() - 10", "NOW() - 1.8", 0.8, 0.3).asTestResult());
+        new TestResultEvaluation("NLGW9Ape4T", "", "", "", 0.8, 0.3).asConfluenceMarkup("#p#info:ip,if"));
     System.out.println(System.currentTimeMillis() - time);
   }
 
@@ -95,7 +95,11 @@ public class TestResultEvaluation {
   private String from = "";
   private String until = "";
 
-  public long totalPassed = 0;;
+  public long totalPassed = 0;
+  public List<String> totalPassedInfo = new ArrayList<String>();
+  public List<String> totalFailedInfo = new ArrayList<String>();
+  public List<String> totalSkippedInfo = new ArrayList<String>();
+  public List<String> totalIgnoredInfo = new ArrayList<String>();
   public long totalFailed = 0;
   public long totalSkipped = 0;
   public long totalIgnored = 0;
@@ -172,6 +176,9 @@ public class TestResultEvaluation {
 
   public String asConfluenceMarkup(String label, boolean emptyIfNoResults) {
     TestResult tr = asTestResult();
+    
+    String renderedLabel = "";
+    String renderedInfo = "";
 
     if (emptyIfNoResults) {
       if (tr.status.equals(Status.unknown)) {
@@ -207,8 +214,10 @@ public class TestResultEvaluation {
     }
 
     if (!label.isEmpty()) {
-      label = " "
-          + label.replace(
+      String[] splittedLabel = label.split("#info:");
+      renderedLabel = splittedLabel[0];
+      renderedLabel = " "
+          + renderedLabel.replace(
               "#t",
               new Long(tr.totalPassed + tr.totalFailed
                   + tr.totalIgnored + tr.totalSkipped)
@@ -221,16 +230,45 @@ public class TestResultEvaluation {
                   new Long(tr.totalSkipped).toString())
               .replace("#i",
                   new Long(tr.totalIgnored).toString());
+      if (splittedLabel.length > 1) {
+        renderedInfo = "";
+        String[] splittedInfos = splittedLabel[1].split(",");
+        for (String info : splittedInfos) {
+          if ("ip".equalsIgnoreCase(info)) {
+            renderedInfo = renderedInfo + getInfo("Passed:", totalPassedInfo);
+          }
+          if ("if".equalsIgnoreCase(info)) {
+            renderedInfo = renderedInfo + getInfo("Failed:", totalFailedInfo);
+          }
+          if ("ii".equalsIgnoreCase(info)) {
+            renderedInfo = renderedInfo + getInfo("Ignored:", totalIgnoredInfo);
+          }
+          if ("is".equalsIgnoreCase(info)) {
+            renderedInfo = renderedInfo + getInfo("Skipped:", totalSkippedInfo);
+          }
+        }
+      }
     }
 
     String clCode = "<span style=\"font-size:0.8em\" title=\""
         + StringEscapeUtils.escapeHtml4(tooltip)
         + "\"><ac:emoticon ac:name=\"" + result + "\"/>"
-        + StringEscapeUtils.escapeHtml4(label) + "</span>";
+        + StringEscapeUtils.escapeHtml4(renderedLabel) + renderedInfo + "</span>";
     
     return clCode;
   }
 
+
+  private String getInfo(String title, List<String> infos) {
+    if (infos.isEmpty()) {
+      return "";
+    }
+    String result = "<br/>" + title + "<br/>";
+    for (String info : infos) {
+      result = result + StringEscapeUtils.escapeHtml4(info) + "<br/>";
+    }
+    return result;
+  }
 
   public String asConfluenceMarkup(String label) {
     return asConfluenceMarkup(label, false);
@@ -268,6 +306,11 @@ public class TestResultEvaluation {
     totalFailed = 0;
     totalSkipped = 0;
     totalIgnored = 0;
+    totalPassedInfo = new ArrayList<String>();
+    totalFailedInfo = new ArrayList<String>();
+    totalSkippedInfo = new ArrayList<String>();
+    totalIgnoredInfo = new ArrayList<String>();
+
     try {
       runs = new Vector<String>();
       String joinedRunnames = StringUtils.join(runnames, "', '");
@@ -291,24 +334,29 @@ public class TestResultEvaluation {
         catch (Exception e) {}
         i++;
       }
-      cypher.add("RETURN tre.result, count(tre)");
+      cypher.add("RETURN tre.result, count(tre), tre.resultname, tre.resultid ORDER BY tre.resultname, tre.resultid");
       String result = neo4jConnector.getResult(getCypher());
       JSONArray data = new JSONObject(result).getJSONArray("data");
 
       for (int index = 0; index < data.length(); index++) {
         String testresult = data.getJSONArray(index).getString(0);
         int total = data.getJSONArray(index).getInt(1);
+        String info = data.getJSONArray(index).getString(2) + " -> " + data.getJSONArray(index).getString(3);
         if ("passed".equalsIgnoreCase(testresult)) {
           totalPassed += total;
+          totalPassedInfo.add(info);
         }
         if ("failed".equalsIgnoreCase(testresult)) {
           totalFailed += total;
+          totalFailedInfo.add(info);
         }
         if ("ignored".equalsIgnoreCase(testresult)) {
           totalIgnored += total;
+          totalIgnoredInfo.add(info);
         }
         if ("skipped".equalsIgnoreCase(testresult)) {
           totalSkipped += total;
+          totalSkippedInfo.add(info);
         }
       }
       // }
