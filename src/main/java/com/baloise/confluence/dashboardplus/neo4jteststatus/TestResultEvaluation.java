@@ -34,6 +34,12 @@ import com.atlassian.json.jsonorg.JSONObject;
  */
 public class TestResultEvaluation {
 
+  private static final String TAG = ":TestTag";
+
+  private static final String RESULT = ":TestResult";
+
+  private static final String RUN = ":TestRun";
+
   public enum Status {
     error, red, yellow, green, grey, unknown, orange
   }
@@ -78,8 +84,8 @@ public class TestResultEvaluation {
     long time = System.currentTimeMillis();
     // System.out.println(new TestResultEvaluation("jirafilter_93607,local",
     // "teststage=unknown,service=unknown", "", "", 0.8, 0.3).asTestResult());
-    System.out.println(
-        new TestResultEvaluation("NLGW9Ape4T", "", "", "", 0.8, 0.3).asConfluenceMarkup("#p#info:ip,if"));
+    System.out
+        .println(new TestResultEvaluation("regex:NLGW9D.*T", "", "", "", 0.8, 0.3).asConfluenceMarkup("#p#info:ip,if"));
     System.out.println(System.currentTimeMillis() - time);
   }
 
@@ -149,34 +155,33 @@ public class TestResultEvaluation {
   private String createToolTip(TestResult testResult) {
     String result;
     if (testResult.status == Status.error) {
-      result = testResult.error.getClass().getSimpleName() + ": "
-          + testResult.error.getMessage();
+      result = testResult.error.getClass().getSimpleName() + ": " + testResult.error.getMessage();
       if (getCypher() != null) {
         result += "\nNeo4j Cypher: " + getCypher();
       }
-    } else if (testResult.status == Status.unknown) {
+    }
+    else if (testResult.status == Status.unknown) {
       result = "The test status cannot be evaluated properly!";
       if (getCypher() != null) {
         result += "\nNeo4j Cypher: " + getCypher();
       }
       result += "\nPlease contact your test supporter.";
       result += "\n";
-    } else {
+    }
+    else {
       String runs = "Runs: ";
       for (String run : testResult.runs) {
         runs = runs + run + ", ";
       }
-      result = runs + "\nPassed: " + testResult.totalPassed
-          + ", Failed: " + testResult.totalFailed + ", Skipped: "
-          + testResult.totalSkipped + ", Ignored: "
-          + testResult.totalIgnored;
+      result = runs + "\nPassed: " + testResult.totalPassed + ", Failed: " + testResult.totalFailed + ", Skipped: "
+          + testResult.totalSkipped + ", Ignored: " + testResult.totalIgnored;
     }
     return result;
   }
 
   public String asConfluenceMarkup(String label, boolean emptyIfNoResults) {
     TestResult tr = asTestResult();
-    
+
     String renderedLabel = "";
     String renderedInfo = "";
 
@@ -188,48 +193,38 @@ public class TestResultEvaluation {
     String result = "";
     String tooltip = createToolTip(tr);
     switch (tr.status) {
-    case unknown:
-      result = "question";
-      break;
-    case error:
-      result = "sad";
-      break;
-    case red:
-      result = "cross";
-      break;
-    case yellow:
-      result = "warning";
-      break;
-    case green:
-      result = "tick";
-      break;
-    case grey:
-      result = "light-off";
-      break;
-    case orange:
-      result = "light-on";
-      break;
-    default:
-      break;
+      case unknown:
+        result = "question";
+        break;
+      case error:
+        result = "sad";
+        break;
+      case red:
+        result = "cross";
+        break;
+      case yellow:
+        result = "warning";
+        break;
+      case green:
+        result = "tick";
+        break;
+      case grey:
+        result = "light-off";
+        break;
+      case orange:
+        result = "light-on";
+        break;
+      default:
+        break;
     }
 
     if (!label.isEmpty()) {
       String[] splittedLabel = label.split("#info:");
       renderedLabel = splittedLabel[0];
-      renderedLabel = " "
-          + renderedLabel.replace(
-              "#t",
-              new Long(tr.totalPassed + tr.totalFailed
-                  + tr.totalIgnored + tr.totalSkipped)
-                  .toString())
-              .replace("#p",
-                  new Long(tr.totalPassed).toString())
-              .replace("#f",
-                  new Long(tr.totalFailed).toString())
-              .replace("#s",
-                  new Long(tr.totalSkipped).toString())
-              .replace("#i",
-                  new Long(tr.totalIgnored).toString());
+      renderedLabel = " " + renderedLabel
+          .replace("#t", new Long(tr.totalPassed + tr.totalFailed + tr.totalIgnored + tr.totalSkipped).toString())
+          .replace("#p", new Long(tr.totalPassed).toString()).replace("#f", new Long(tr.totalFailed).toString())
+          .replace("#s", new Long(tr.totalSkipped).toString()).replace("#i", new Long(tr.totalIgnored).toString());
       if (splittedLabel.length > 1) {
         renderedInfo = "";
         String[] splittedInfos = splittedLabel[1].split(",");
@@ -250,14 +245,12 @@ public class TestResultEvaluation {
       }
     }
 
-    String clCode = "<span style=\"font-size:0.8em\" title=\""
-        + StringEscapeUtils.escapeHtml4(tooltip)
-        + "\"><ac:emoticon ac:name=\"" + result + "\"/>"
-        + StringEscapeUtils.escapeHtml4(renderedLabel) + renderedInfo + "</span>";
-    
+    String clCode = "<span style=\"font-size:0.8em\" title=\"" + StringEscapeUtils.escapeHtml4(tooltip)
+        + "\"><ac:emoticon ac:name=\"" + result + "\"/>" + StringEscapeUtils.escapeHtml4(renderedLabel) + renderedInfo
+        + "</span>";
+
     return clCode;
   }
-
 
   private String getInfo(String title, List<String> infos) {
     if (infos.isEmpty()) {
@@ -316,8 +309,8 @@ public class TestResultEvaluation {
       String joinedRunnames = StringUtils.join(runnames, "', '");
 
       cypher = new ArrayList<String>();
-      cypher.add("MATCH (tre:TestResult)<--(tru:TestRun)");
-      cypher.add("WHERE tru.runname IN ['" + joinedRunnames + "']");
+      cypher.add("MATCH (tre" + RESULT + ")<--(tru" + RUN + ")");
+      cypher.add(whereConditionForRunnames(joinedRunnames));
       if (!from.isEmpty()) {
         cypher.add("AND tre.startedTime >= '" + getFormulaAsDateString(from) + "'");
       }
@@ -328,7 +321,7 @@ public class TestResultEvaluation {
       for (String criteria : criterias) {
         try {
           String[] splittedCriteria = criteria.split("=");
-          cypher.add("MATCH (tre)-->(tt" + i + ":TestTag {key: '" + splittedCriteria[0] + "', value: '"
+          cypher.add("MATCH (tre)-->(tt" + i + TAG + " {key: '" + splittedCriteria[0] + "', value: '"
               + splittedCriteria[1] + "'})");
         }
         catch (Exception e) {}
@@ -371,6 +364,15 @@ public class TestResultEvaluation {
     }
   }
 
+  private String whereConditionForRunnames(String joinedRunnames) {
+    String regex = "regex:";
+    if (joinedRunnames.startsWith(regex)) {
+      joinedRunnames = joinedRunnames.replace(regex, "");
+      return "WHERE tru.runname =~ '" + joinedRunnames + "'";
+    }
+    return "WHERE tru.runname IN ['" + joinedRunnames + "']";
+  }
+
   public String getFormulaAsDateString(String formula) throws IOException {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     Workbook wb = new HSSFWorkbook();
@@ -402,8 +404,8 @@ public class TestResultEvaluation {
       String joinedRunnames = StringUtils.join(runnames, "', '");
 
       cypher = new ArrayList<String>();
-      cypher.add("MATCH (tre:TestResult)<--(tru:TestRun)");
-      cypher.add("WHERE tru.runname IN ['" + joinedRunnames + "']");
+      cypher.add("MATCH (tre" + RESULT + ")<--(tru" + RUN + ")");
+      cypher.add(whereConditionForRunnames(joinedRunnames));
       if (!from.isEmpty()) {
         cypher.add("AND tre.startedTime >= '" + getFormulaAsDateString(from) + "'");
       }
@@ -414,13 +416,13 @@ public class TestResultEvaluation {
       for (String criteria : criterias) {
         try {
           String[] splittedCriteria = criteria.split("=");
-          cypher.add("MATCH (tre)-->(tt" + i + ":TestTag {key: '" + splittedCriteria[0] + "', value: '"
+          cypher.add("MATCH (tre)-->(tt" + i + TAG + " {key: '" + splittedCriteria[0] + "', value: '"
               + splittedCriteria[1] + "'})");
         }
         catch (Exception e) {}
         i++;
       }
-      cypher.add("MATCH (tre)-->(tt" + i + ":TestTag {key: '" + key + "'})");
+      cypher.add("MATCH (tre)-->(tt" + i + TAG + " {key: '" + key + "'})");
       cypher.add("RETURN DISTINCT tt" + i + ".value ORDER BY tt" + i + ".value");
       String result = neo4jConnector.getResult(getCypher());
 

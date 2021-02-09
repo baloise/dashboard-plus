@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.baloise.confluence</groupId>
 	<artifactId>dashboard-plus</artifactId>
-	<version>1.4.6-baloise</version>
+	<version>1.4.8-baloise</version>
 
 	<organization>
 		<name>Basler Versicherungen</name>
