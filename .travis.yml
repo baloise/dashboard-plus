@@ -1,9 +1,0 @@
-language: java
-# deploy:
-#   provider: releases
-#   api-key: "9d7b62ae7cd6fb6df35162e53371c7503738ae54"
-#   file: "target/dashboard-plus-*.jar"
-#   skip_cleanup: true
-#   on:
-#     tags: true
-#     all_branches: true
