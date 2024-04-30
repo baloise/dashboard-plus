@@ -16,6 +16,7 @@ import com.atlassian.confluence.user.AuthenticatedUserThreadLocal;
 import com.atlassian.confluence.user.ConfluenceUserPreferences;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.sal.api.message.I18nResolver;
+import com.atlassian.sal.api.timezone.TimeZoneManager;
 import com.atlassian.user.User;
 
 public abstract class StatusLightBasedMacro implements Macro {
@@ -42,16 +43,18 @@ public abstract class StatusLightBasedMacro implements Macro {
 	protected final UserAccessor userAccessor;
 	protected final FormatSettingsManager formatSettingsManager;
 	protected final LocaleManager localeManager;
+	protected final TimeZoneManager timeZoneManager;
 	protected final I18nResolver i18n;
 
 	public StatusLightBasedMacro(Renderer renderer, UserAccessor userAccessor,
-			FormatSettingsManager formatSettingsManager,
-			LocaleManager localeManager, I18nResolver i18n) {
+			FormatSettingsManager formatSettingsManager, LocaleManager localeManager, 
+			TimeZoneManager timeZoneManager, I18nResolver i18n) {
 		super();
 		this.renderer = renderer;
 		this.userAccessor = userAccessor;
 		this.formatSettingsManager = formatSettingsManager;
 		this.localeManager = localeManager;
+		this.timeZoneManager = timeZoneManager;
 		this.i18n = i18n;
 	}
 
@@ -157,11 +160,11 @@ public abstract class StatusLightBasedMacro implements Macro {
 
 	protected FriendlyDateFormatter newFriendlyDateFormatter() {
 		// Get current user's timezone, or default one
-		User authUser = AuthenticatedUserThreadLocal.getUser();
+		User authUser = AuthenticatedUserThreadLocal.get();
 		TimeZone timeZone;
 		if (authUser == null) {
 			// anonymous
-			timeZone = TimeZone.getDefault();
+			timeZone = TimeZone.getInstance(timeZoneManager.getDefaultTimeZone());
 		} else {
 			ConfluenceUserPreferences prefs = userAccessor
 					.getConfluenceUserPreferences(authUser);
@@ -179,7 +182,7 @@ public abstract class StatusLightBasedMacro implements Macro {
 
 	protected NumberFormat newNumberFormatter() {
 		// Get current user's timezone, or default one
-		User authUser = AuthenticatedUserThreadLocal.getUser();
+		User authUser = AuthenticatedUserThreadLocal.get();
 		NumberFormat result = null;
 		if (authUser != null) {
 			ConfluenceUserPreferences prefs = userAccessor
