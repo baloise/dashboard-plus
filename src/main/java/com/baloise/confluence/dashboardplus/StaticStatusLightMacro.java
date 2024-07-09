@@ -11,6 +11,7 @@ import com.atlassian.confluence.renderer.radeox.macros.MacroUtils;
 import com.atlassian.confluence.user.UserAccessor;
 import com.atlassian.confluence.util.velocity.VelocityUtils;
 import com.atlassian.sal.api.message.I18nResolver;
+import com.atlassian.sal.api.timezone.TimeZoneManager;
 
 public class StaticStatusLightMacro extends StatusLightBasedMacro {
 
@@ -38,9 +39,9 @@ public class StaticStatusLightMacro extends StatusLightBasedMacro {
 	/* ApplicationLinkService applicationLinkService, */Renderer renderer,
 			UserAccessor userAccessor,
 			FormatSettingsManager formatSettingsManager,
-			LocaleManager localeManager, I18nResolver i18n) {
+			LocaleManager localeManager, TimeZoneManager timeZoneManager, I18nResolver i18n) {
 		super(renderer, userAccessor, formatSettingsManager, localeManager,
-				i18n);
+				timeZoneManager, i18n);
 	}
 
 	@Override
